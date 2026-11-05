@@ -28,11 +28,13 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CardElevation
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Surface
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.UiComposable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.unit.dp
 import com.movtery.zalithlauncher.setting.AllSettings
 import com.movtery.zalithlauncher.ui.screens.content.elements.backgroundGlass
@@ -58,14 +60,14 @@ private fun flatCardElevation() = CardDefaults.cardElevation(
 fun BackgroundCard(
     modifier: Modifier = Modifier,
     influencedByBackground: Boolean = true,
-    shape: Shape = CardDefaults.shape,
+    shape: Shape = RoundedCornerShape(22.dp),
     colors: CardColors = CardDefaults.cardColors(
         containerColor = cardColor(influencedByBackground),
         contentColor = onCardColor()
     ),
     elevation: CardElevation = flatCardElevation(),
     blur: Int = AllSettings.backgroundBlur.state,
-    border: BorderStroke? = null,
+    border: BorderStroke? = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.18f)),
     content: @Composable ColumnScope.() -> Unit
 ) {
     Card(
@@ -149,6 +151,9 @@ fun CardTitleLayout(
                 content = content
             )
         }
-        HorizontalDivider(modifier = Modifier.fillMaxWidth())
+        HorizontalDivider(
+            modifier = Modifier.fillMaxWidth(),
+            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.22f)
+        )
     }
 }
