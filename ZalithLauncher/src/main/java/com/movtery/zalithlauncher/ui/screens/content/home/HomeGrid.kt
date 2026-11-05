@@ -74,6 +74,7 @@ import com.movtery.cardgrid.ui.CardGrid
 import com.movtery.cardgrid.ui.CardGridAutoScroll
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.setting.AllSettings
+import com.movtery.zalithlauncher.game.version.installed.VersionsManager
 import com.movtery.zalithlauncher.ui.screens.content.elements.backgroundGlass
 import com.movtery.zalithlauncher.ui.screens.content.home.server.ServerCardManager
 import com.movtery.zalithlauncher.ui.screens.content.home.server.ServerCardSettingsHost
@@ -151,6 +152,22 @@ fun HomeGrid(
                     state.addCard(HomeCards.versionCardType(), cardState.record.cardId)
                 }
             }
+        }
+    }
+
+    // 首次准备完成后，自动把三个 REALISTIC Fabric 版本加入主页快捷卡片。
+    LaunchedEffect(Unit) {
+        val supportedProfiles = setOf(
+            "REALISTIC-1.21.1-Fabric",
+            "REALISTIC-1.20.1-Fabric",
+            "REALISTIC-1.19.2-Fabric"
+        )
+        VersionsManager.versions.collect { versions ->
+            versions
+                .filter { it.getVersionName() in supportedProfiles && it.isValid() }
+                .forEach { version ->
+                    VersionCardManager.addCard(version)
+                }
         }
     }
 
