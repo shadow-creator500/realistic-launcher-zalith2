@@ -249,13 +249,13 @@ fun HomeGrid(
                         letterSpacing = 1.5.sp
                     )
                     Text(
-                        text = "CENTRAL DE JOGO  •  MINECRAFT JAVA",
+                        text = "SOBREVIVÊNCIA REALISTA  •  MINECRAFT JAVA",
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         style = MaterialTheme.typography.labelMedium,
                         letterSpacing = 1.sp
                     )
                     Text(
-                        text = "Seu mundo começa aqui. Escolha uma opção para continuar.",
+                        text = "Explore, construa e sobreviva. Sua próxima aventura começa aqui.",
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         style = MaterialTheme.typography.bodySmall
                     )
@@ -270,7 +270,7 @@ fun HomeGrid(
             }
 
             Text(
-                text = "INÍCIO RÁPIDO",
+                text = "ESCOLHA SUA VERSÃO",
                 modifier = Modifier.padding(start = 10.dp, top = 8.dp, bottom = 2.dp),
                 color = MaterialTheme.colorScheme.primary,
                 style = MaterialTheme.typography.titleSmall,
@@ -296,7 +296,7 @@ fun HomeGrid(
             }
 
             Text(
-                text = "SEUS ATALHOS",
+                text = "SEUS PERFIS DE JOGO",
                 modifier = Modifier.padding(start = 10.dp, top = 16.dp, bottom = 2.dp),
                 color = MaterialTheme.colorScheme.primary,
                 style = MaterialTheme.typography.titleSmall,
