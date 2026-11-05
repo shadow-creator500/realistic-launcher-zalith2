@@ -61,10 +61,12 @@ object HomeCards {
 
     private val versionCardType = CardType(
         typeId = VERSION_CARD_TYPE_ID,
-        defaultSpan = IntOffset(10, 6),
+        // Perfis de jogo ocupam uma linha inteira e ficam empilhados verticalmente.
+        defaultSpan = IntOffset(64, 9),
         limits = CardLimits(
-            minWidth = 10,
-            minHeight = 4,
+            minWidth = 64,
+            minHeight = 8,
+            maxWidth = 64,
             maxHeight = 12
         ),
         content = { cardId ->
