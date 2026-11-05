@@ -172,6 +172,13 @@ fun LauncherSettingsScreen(
                 )
             }
 
+            Text(
+                text = "APARÊNCIA E INTERFACE",
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                modifier = Modifier.padding(top = 8.dp, bottom = 2.dp, start = 4.dp)
+            )
             AnimatedItem { ctx ->
                 SettingsCardColumn(
                     modifier = Modifier
@@ -255,6 +262,13 @@ fun LauncherSettingsScreen(
                 }
             }
 
+            Text(
+                text = "PLANO DE FUNDO",
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                modifier = Modifier.padding(top = 16.dp, bottom = 2.dp, start = 4.dp)
+            )
             //启动器背景设置板块
             LocalBackgroundViewModel.current?.let { backgroundViewModel ->
                 AnimatedItem { ctx ->
@@ -345,6 +359,13 @@ fun LauncherSettingsScreen(
                 }
             }
 
+            Text(
+                text = "ANIMAÇÕES",
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                modifier = Modifier.padding(top = 16.dp, bottom = 2.dp, start = 4.dp)
+            )
             //动画设置板块
             AnimatedItem { ctx ->
                 SettingsCardColumn(
@@ -373,6 +394,13 @@ fun LauncherSettingsScreen(
                 }
             }
 
+            Text(
+                text = "DOWNLOADS E DIAGNÓSTICO",
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                modifier = Modifier.padding(top = 16.dp, bottom = 2.dp, start = 4.dp)
+            )
             AnimatedItem { ctx ->
                 SettingsCardColumn(
                     modifier = Modifier
