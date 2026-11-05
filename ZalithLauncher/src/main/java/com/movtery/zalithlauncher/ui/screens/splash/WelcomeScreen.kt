@@ -296,7 +296,7 @@ private fun WelcomeTerminal(
                 ) {
                     Text(
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 7.dp),
-                        text = "♥ MADE WITH HEART ♥",
+                        text = "♥ FEITO COM CUIDADO ♥",
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
                         letterSpacing = 1.4.sp
@@ -497,11 +497,22 @@ private fun ProductBanner(
             contentDescription = null
         )
 
-        Text(
-            text = "REALISTIC LAUNCHER",
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold
-        )
+        Column(
+            verticalArrangement = Arrangement.spacedBy(3.dp)
+        ) {
+            Text(
+                text = "REALISTIC LAUNCHER",
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = stringResource(R.string.welcome_screen_unofficial_notice),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 1.1.sp
+            )
+        }
     }
 }
 
