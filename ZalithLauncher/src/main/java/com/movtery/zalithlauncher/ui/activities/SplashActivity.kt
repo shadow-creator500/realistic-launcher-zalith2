@@ -46,6 +46,8 @@ import com.movtery.zalithlauncher.setting.launcherMMKV
 import com.movtery.zalithlauncher.ui.base.BaseAppCompatActivity
 import com.movtery.zalithlauncher.ui.screens.navigateOnce
 import com.movtery.zalithlauncher.ui.screens.splash.SplashOperation
+import com.movtery.zalithlauncher.ui.screens.splash.PreparationStatus
+import com.movtery.zalithlauncher.ui.screens.splash.VersionPreparationItem
 import com.movtery.zalithlauncher.ui.screens.splash.SplashScreen
 import com.movtery.zalithlauncher.ui.theme.ZalithLauncherTheme
 import com.movtery.zalithlauncher.ui.theme.backgroundColor
@@ -55,6 +57,8 @@ import com.movtery.zalithlauncher.utils.logging.Logger
 import com.movtery.zalithlauncher.viewmodel.SplashBackStackViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -86,6 +90,18 @@ class SplashActivity : BaseAppCompatActivity() {
     private val unpackItems: MutableList<InstallableItem> = ArrayList()
     private val finishedTaskCount = AtomicInteger(0)
     private var unpackJob: Job? = null
+    private var preparationJob: Job? = null
+
+    private val supportedGameVersions = listOf("1.21.1", "1.20.1", "1.19.2")
+    private val _preparationItems = MutableStateFlow(
+        supportedGameVersions.map { version ->
+            VersionPreparationItem(
+                version = version,
+                title = "Minecraft $version + Fabric"
+            )
+        }
+    )
+    private val preparationItems = _preparationItems.asStateFlow()
 
     private var pendingImportIntent: Intent? = null
 
@@ -150,7 +166,9 @@ class SplashActivity : BaseAppCompatActivity() {
                         },
                         availableAgreement = availableAgreement,
                         unpackItems = unpackItems,
-                        screenViewModel = backStackViewModel
+                        screenViewModel = backStackViewModel,
+                        preparationItems = preparationItems,
+                        onRetryPreparation = { prepareRealisticVersions() }
                     )
                 }
             }
@@ -322,34 +340,119 @@ class SplashActivity : BaseAppCompatActivity() {
         if (import != null && handleImportIntent(import)) {
             finish()
         } else {
-            swapToMain()
+            prepareRealisticVersions()
+        }
+    }
+
+    /**
+     * Prepare the three supported Fabric profiles on first launch and repair any missing profile later.
+     * Installs are sequential because GameInstaller uses one shared temporary download directory.
+     */
+    private fun prepareRealisticVersions() {
+        if (preparationJob?.isActive == true) return
+        switchScreen(SplashOperation.PreparingVersions)
+        preparationJob = lifecycleScope.launch {
+            supportedGameVersions.forEach { gameVersion ->
+                val customName = "REALISTIC-$gameVersion-Fabric"
+                if (VersionsManager.isVersionExists(customName, checkJson = true)) {
+                    updatePreparation(
+                        gameVersion,
+                        PreparationStatus.COMPLETE,
+                        "Já está instalado"
+                    )
+                    return@forEach
+                }
+
+                updatePreparation(
+                    gameVersion,
+                    PreparationStatus.PREPARING,
+                    "Obtendo a versão compatível do Fabric..."
+                )
+
+                try {
+                    val fabricVersion = FabricVersions.fetchFabricLoaderList(gameVersion)
+                        ?.firstOrNull { it.stable }
+                        ?: FabricVersions.fetchFabricLoaderList(gameVersion)?.firstOrNull()
+                        ?: throw IllegalStateException("Não foi possível obter o Fabric para Minecraft $gameVersion")
+
+                    updatePreparation(
+                        gameVersion,
+                        PreparationStatus.PREPARING,
+                        "Baixando e preparando os arquivos do Minecraft..."
+                    )
+
+                    val installer = GameInstaller(
+                        context = this@SplashActivity,
+                        info = GameDownloadInfo(
+                            gameVersion = gameVersion,
+                            customVersionName = customName,
+                            fabric = fabricVersion
+                        ),
+                        scope = this
+                    )
+                    val completed = CompletableDeferred<Unit>()
+                    installer.installGame(
+                        onInstalled = { completed.complete(Unit) },
+                        onError = { completed.completeExceptionally(it) },
+                        onGameAlreadyInstalled = { completed.complete(Unit) }
+                    )
+                    completed.await()
+
+                    updatePreparation(
+                        gameVersion,
+                        PreparationStatus.COMPLETE,
+                        "Instalado e pronto para jogar"
+                    )
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    Logger.error(TAG, "Failed to prepare Minecraft $gameVersion", e)
+                    updatePreparation(
+                        gameVersion,
+                        PreparationStatus.FAILED,
+                        e.message ?: "Falha ao preparar esta versão"
+                    )
+                }
+            }
+
+            if (_preparationItems.value.none { it.status == PreparationStatus.FAILED }) {
+                VersionsManager.refresh("REALISTIC_LAUNCHER.initialPreparation")
+                swapToMain()
+            }
+        }
+    }
+
+    private fun updatePreparation(
+        version: String,
+        status: PreparationStatus,
+        detail: String
+    ) {
+        _preparationItems.update { items ->
+            items.map { item ->
+                if (item.version == version) {
+                    item.copy(status = status, detail = detail)
+                } else item
+            }
         }
     }
 
     private fun checkTasksToMain() {
-        fun run(): Boolean {
-            if (!areAllTasksFinished()) return false
+        if (!areAllTasksFinished()) {
+            switchScreen(SplashOperation.Unpacking)
+            return
+        }
 
-            Logger.info(TAG, "All content that needs to be extracted is already the latest version!")
+        Logger.info(TAG, "All launcher components are ready.")
 
-            if (isImportIntent(intent) && !isLauncherIntent(intent)) {
-                val success = handleImportIntent(intent)
-                if (success) {
-                    finish()
-                    return true
-                }
+        if (isImportIntent(intent) && !isLauncherIntent(intent)) {
+            val success = handleImportIntent(intent)
+            if (success) {
+                finish()
+                return
             }
-
-            swapToMain()
-            return true
         }
 
-        val screen = if (run()) {
-            SplashOperation.Loading
-        } else {
-            SplashOperation.Unpacking
-        }
-        switchScreen(screen)
+        prepareRealisticVersions()
     }
 
     private fun swapToMain() {
