@@ -242,7 +242,7 @@ fun HomeGrid(
                     verticalArrangement = Arrangement.spacedBy(5.dp)
                 ) {
                     Text(
-                        text = "REALISTIC CRAFT",
+                        text = "REALISTIC LAUNCHER",
                         color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Black,
