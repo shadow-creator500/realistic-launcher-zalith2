@@ -39,6 +39,10 @@ import com.movtery.zalithlauncher.components.jre.Jre
 import com.movtery.zalithlauncher.components.jre.UnpackJnaTask
 import com.movtery.zalithlauncher.components.jre.UnpackJreTask
 import com.movtery.zalithlauncher.context.readAssetFile
+import com.movtery.zalithlauncher.game.addons.modloader.fabriclike.fabric.FabricVersions
+import com.movtery.zalithlauncher.game.download.game.GameDownloadInfo
+import com.movtery.zalithlauncher.game.download.game.GameInstaller
+import com.movtery.zalithlauncher.game.version.installed.VersionsManager
 import com.movtery.zalithlauncher.legal.AvailableAgreement
 import com.movtery.zalithlauncher.path.GLOBAL_JSON
 import com.movtery.zalithlauncher.setting.AllSettings
