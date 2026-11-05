@@ -117,6 +117,7 @@ fun SearchFilter(
     searchedMcMods: List<AddonProjectInfo>,
     searchedVersions: List<String>,
     gameVersion: String,
+    gameVersionReadOnly: Boolean = false,
     onGameVersionChange: (String) -> Unit = {},
     sortField: PlatformSortField,
     onSortFieldChange: (PlatformSortField) -> Unit = {},
@@ -168,6 +169,7 @@ fun SearchFilter(
             SuggestionsText(
                 value = gameVersion,
                 onValueChange = onGameVersionChange,
+                readOnly = gameVersionReadOnly,
                 label = stringResource(R.string.download_assets_filter_game_version),
                 onSearch = onSearch,
                 suggestions = searchedVersions,
@@ -278,6 +280,7 @@ private fun <E> SuggestionsText(
     suggestionLabel: @Composable FlowRowScope.(E) -> Unit,
     onSuggestionClick: (E) -> Unit,
     modifier: Modifier = Modifier,
+    readOnly: Boolean = false,
 ) {
     val focusManager = LocalFocusManager.current
     val interactionSource = remember { MutableInteractionSource() }
@@ -302,6 +305,7 @@ private fun <E> SuggestionsText(
                 .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable),
             value = value,
             onValueChange = onValueChange,
+            readOnly = readOnly,
             shape = fieldShape,
             label = {
                 Text(text = label)
