@@ -1,7 +1,7 @@
 name: Build APK
 
 on:
-    workflow_dispatch:
+  workflow_dispatch:
     inputs:
       variant:
         description: "Tipo de compilação"
@@ -10,6 +10,7 @@ on:
         options:
           - Debug
         default: Debug
+
   workflow_call:
     inputs:
       variant:
