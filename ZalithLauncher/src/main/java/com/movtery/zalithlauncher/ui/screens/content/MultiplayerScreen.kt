@@ -22,6 +22,8 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -48,6 +50,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.font.FontWeight
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.notification.NotificationManager
 import com.movtery.zalithlauncher.path.PathManager
@@ -88,36 +91,103 @@ fun MultiplayerScreen(
         screenKey = NormalNavKey.Multiplayer,
         currentKey = backScreenViewModel.mainScreen.currentKey
     ) { isVisible ->
-        AnimatedRow(
-            modifier = Modifier.fillMaxSize(),
-            isVisible = isVisible,
-            stagger = false, //同时进行
-        ) {
-            AnimatedItem { ctx ->
-                TutorialMenu(
-                    modifier = Modifier
-                        .weight(0.5f)
-                        .animated(ctx, from = AnimatedDirection.Left)
-                        .padding(start = 12.dp)
-                )
+        Column(modifier = Modifier.fillMaxSize()) {
+            BackgroundCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                shape = MaterialTheme.shapes.extraLarge
+            ) {
+                Column(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text(
+                        text = "REALISTIC LAN",
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Black,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Text(
+                        text = "JOGUE COM AMIGOS • WI-FI, HOTSPOT E CONVITES",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = "LAN LOCAL e rede virtual em uma única central.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
 
-            AnimatedItem { ctx ->
-                MainMenu(
-                    modifier = Modifier
-                        .weight(0.5f)
-                        .animated(ctx, from = AnimatedDirection.Right)
-                        .padding(end = 12.dp),
-                    eventViewModel = eventViewModel,
-                    onShareLogs = {
-                        val logFile = PathManager.FILE_TERRACOTTA_LOG
-                        if (logFile.exists()) {
-                            shareFile(context, logFile)
-                        } else {
-                            eventViewModel.sendToast(androidText(R.string.terracotta_export_log_share_null))
+            BoxWithConstraints(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            ) {
+                if (maxWidth < 600.dp) {
+                    // Layout vertical para celulares em modo retrato.
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        MainMenu(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(0.9f)
+                                .padding(horizontal = 12.dp),
+                            eventViewModel = eventViewModel,
+                            onShareLogs = {
+                                val logFile = PathManager.FILE_TERRACOTTA_LOG
+                                if (logFile.exists()) {
+                                    shareFile(context, logFile)
+                                } else {
+                                    eventViewModel.sendToast(androidText(R.string.terracotta_export_log_share_null))
+                                }
+                            }
+                        )
+                        TutorialMenu(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1.1f)
+                                .padding(horizontal = 12.dp)
+                        )
+                    }
+                } else {
+                    AnimatedRow(
+                        modifier = Modifier.fillMaxSize(),
+                        isVisible = isVisible,
+                        stagger = false,
+                    ) {
+                        AnimatedItem { ctx ->
+                            TutorialMenu(
+                                modifier = Modifier
+                                    .weight(0.5f)
+                                    .animated(ctx, from = AnimatedDirection.Left)
+                                    .padding(start = 12.dp)
+                            )
+                        }
+
+                        AnimatedItem { ctx ->
+                            MainMenu(
+                                modifier = Modifier
+                                    .weight(0.5f)
+                                    .animated(ctx, from = AnimatedDirection.Right)
+                                    .padding(end = 12.dp),
+                                eventViewModel = eventViewModel,
+                                onShareLogs = {
+                                    val logFile = PathManager.FILE_TERRACOTTA_LOG
+                                    if (logFile.exists()) {
+                                        shareFile(context, logFile)
+                                    } else {
+                                        eventViewModel.sendToast(androidText(R.string.terracotta_export_log_share_null))
+                                    }
+                                }
+                            )
                         }
                     }
-                )
+                }
             }
         }
     }
