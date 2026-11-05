@@ -23,6 +23,7 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -694,185 +695,209 @@ fun VersionItemLayout(
     onDeleteClick: () -> Unit = {},
     onPinned: () -> Unit = {}
 ) {
-    val scale = remember { Animatable(initialValue = 0.95f) }
+    val scale = remember { Animatable(initialValue = 0.96f) }
     LaunchedEffect(Unit) {
         scale.animateTo(targetValue = 1f, animationSpec = getAnimateTween())
     }
+
+    val cardShape = MaterialTheme.shapes.extraLarge
+    val accent = if (selected) Color(0xFFFF2948) else Color(0xFF55202B)
+
     Surface(
-        modifier = modifier.graphicsLayer(scaleY = scale.value, scaleX = scale.value),
+        modifier = modifier
+            .graphicsLayer(scaleY = scale.value, scaleX = scale.value)
+            .border(1.dp, accent, cardShape),
         color = color,
         contentColor = contentColor,
-        shape = MaterialTheme.shapes.large,
+        shape = cardShape,
         onClick = {
             if (selected) return@Surface
             onSelected()
         }
     ) {
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(shape = MaterialTheme.shapes.large)
+                .clip(shape = cardShape)
                 .backgroundGlass(blur, color, influencedByBackground)
-                .padding(all = 4.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(horizontal = 12.dp, vertical = 10.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            RadioButton(
-                selected = selected,
-                onClick = {
-                    if (selected) return@RadioButton
-                    onSelected()
-                }
-            )
-            CommonVersionInfoLayout(
-                modifier = Modifier.weight(1f),
-                version = version
-            )
-
-            IconButton(
-                onClick = {
-                    val currentValue = version.pinnedState
-                    runCatching {
-                        version.setPinnedAndSave(!currentValue)
-                    }.onFailure { e ->
-                        Logger.error(TAG, "Failed to save version config!", e)
-                        submitError(
-                            ErrorViewModel.ThrowableMessage(
-                                title = androidText(R.string.versions_config_failed_to_save),
-                                message = androidText(e.getMessageOrToString())
-                            )
-                        )
-                    }.onSuccess {
-                        onPinned()
-                    }
-                },
-                enabled = version.isValid()
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Crossfade(
-                    targetState = version.pinnedState
-                ) { pinned ->
-                    val icon = if (pinned) {
-                        painterResource(R.drawable.ic_pinned_filled)
-                    } else {
-                        painterResource(R.drawable.ic_pinned_outlined)
+                RadioButton(
+                    selected = selected,
+                    onClick = {
+                        if (selected) return@RadioButton
+                        onSelected()
                     }
-                    Icon(
-                        modifier = Modifier.rotate(45.0f),
-                        painter = icon,
-                        contentDescription = stringResource(R.string.versions_manage_pin)
+                )
+                CommonVersionInfoLayout(
+                    modifier = Modifier.weight(1f),
+                    version = version,
+                    iconSize = 50.dp
+                )
+                if (selected) {
+                    Text(
+                        text = "ATIVA",
+                        color = Color(0xFFFF405B),
+                        style = MaterialTheme.typography.labelMedium
                     )
                 }
             }
 
-            IconButton(
-                onClick = onSettingsClick,
-                enabled = version.isValid()
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    modifier = Modifier.size(24.dp),
-                    painter = painterResource(R.drawable.ic_settings_filled),
-                    contentDescription = stringResource(R.string.versions_manage_settings)
-                )
-            }
+                IconButton(
+                    onClick = {
+                        val currentValue = version.pinnedState
+                        runCatching {
+                            version.setPinnedAndSave(!currentValue)
+                        }.onFailure { e ->
+                            Logger.error(TAG, "Failed to save version config!", e)
+                            submitError(
+                                ErrorViewModel.ThrowableMessage(
+                                    title = androidText(R.string.versions_config_failed_to_save),
+                                    message = androidText(e.getMessageOrToString())
+                                )
+                            )
+                        }.onSuccess {
+                            onPinned()
+                        }
+                    },
+                    enabled = version.isValid()
+                ) {
+                    Crossfade(targetState = version.pinnedState) { pinned ->
+                        val icon = if (pinned) {
+                            painterResource(R.drawable.ic_pinned_filled)
+                        } else {
+                            painterResource(R.drawable.ic_pinned_outlined)
+                        }
+                        Icon(
+                            modifier = Modifier.rotate(45.0f),
+                            painter = icon,
+                            contentDescription = stringResource(R.string.versions_manage_pin)
+                        )
+                    }
+                }
 
-            Row {
-                var menuExpanded by remember { mutableStateOf(false) }
-
-                IconButton(onClick = { menuExpanded = !menuExpanded }) {
+                IconButton(
+                    onClick = onSettingsClick,
+                    enabled = version.isValid()
+                ) {
                     Icon(
                         modifier = Modifier.size(24.dp),
-                        painter = painterResource(R.drawable.ic_more_horiz),
-                        contentDescription = stringResource(R.string.generic_more)
+                        painter = painterResource(R.drawable.ic_settings_filled),
+                        contentDescription = stringResource(R.string.versions_manage_settings)
                     )
                 }
 
-                DropdownMenu(
-                    expanded = menuExpanded,
-                    shape = MaterialTheme.shapes.large,
-                    shadowElevation = 3.dp,
-                    onDismissRequest = { menuExpanded = false }
-                ) {
-                    DropdownMenuItem(
-                        text = { Text(text = stringResource(R.string.generic_rename)) },
-                        leadingIcon = {
-                            Icon(
-                                modifier = Modifier.size(20.dp),
-                                painter = painterResource(R.drawable.ic_edit_filled),
-                                contentDescription = stringResource(R.string.generic_rename)
-                            )
-                        },
-                        onClick = {
-                            onRenameClick()
-                            menuExpanded = false
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = { Text(text = stringResource(R.string.generic_copy)) },
-                        leadingIcon = {
-                            Icon(
-                                modifier = Modifier.size(20.dp),
-                                painter = painterResource(R.drawable.ic_file_copy_filled),
-                                contentDescription = stringResource(R.string.generic_copy)
-                            )
-                        },
-                        onClick = {
-                            onCopyClick()
-                            menuExpanded = false
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = { Text(text = stringResource(R.string.versions_export)) },
-                        leadingIcon = {
-                            Icon(
-                                modifier = Modifier.size(20.dp),
-                                painter = painterResource(R.drawable.ic_folder_zip_filled),
-                                contentDescription = stringResource(R.string.versions_export)
-                            )
-                        },
-                        onClick = {
-                            onExportClick()
-                            menuExpanded = false
-                        }
-                    )
-                    //添加卡片到主界面
-                    val cardExists by remember(version) {
-                        VersionCardManager.cards.map { states ->
-                            states.any {
-                                it.record.versionName == version.getVersionName() &&
-                                        it.record.dir == VersionCardDir.fromGameHome(version.getGameHome())
+                Row {
+                    var menuExpanded by remember { mutableStateOf(false) }
+
+                    IconButton(onClick = { menuExpanded = !menuExpanded }) {
+                        Icon(
+                            modifier = Modifier.size(24.dp),
+                            painter = painterResource(R.drawable.ic_more_horiz),
+                            contentDescription = stringResource(R.string.generic_more)
+                        )
+                    }
+
+                    DropdownMenu(
+                        expanded = menuExpanded,
+                        shape = MaterialTheme.shapes.large,
+                        shadowElevation = 3.dp,
+                        onDismissRequest = { menuExpanded = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text(text = stringResource(R.string.generic_rename)) },
+                            leadingIcon = {
+                                Icon(
+                                    modifier = Modifier.size(20.dp),
+                                    painter = painterResource(R.drawable.ic_edit_filled),
+                                    contentDescription = stringResource(R.string.generic_rename)
+                                )
+                            },
+                            onClick = {
+                                onRenameClick()
+                                menuExpanded = false
                             }
-                        }
-                    }.collectAsStateWithLifecycle(
-                        VersionCardManager.hasCard(version.getVersionName(), version.getGameHome())
-                    )
-                    DropdownMenuItem(
-                        text = { Text(text = stringResource(R.string.home_add_version_card)) },
-                        leadingIcon = {
-                            Icon(
-                                modifier = Modifier.size(20.dp),
-                                painter = painterResource(R.drawable.ic_add_box_filled),
-                                contentDescription = stringResource(R.string.home_add_version_card)
-                            )
-                        },
-                        enabled = version.isValid() && !cardExists,
-                        onClick = {
-                            VersionCardManager.addCard(version)
-                            menuExpanded = false
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = { Text(text = stringResource(R.string.generic_delete)) },
-                        leadingIcon = {
-                            Icon(
-                                modifier = Modifier.size(20.dp),
-                                painter = painterResource(R.drawable.ic_delete_filled),
-                                contentDescription = stringResource(R.string.generic_delete)
-                            )
-                        },
-                        onClick = {
-                            onDeleteClick()
-                            menuExpanded = false
-                        }
-                    )
+                        )
+                        DropdownMenuItem(
+                            text = { Text(text = stringResource(R.string.generic_copy)) },
+                            leadingIcon = {
+                                Icon(
+                                    modifier = Modifier.size(20.dp),
+                                    painter = painterResource(R.drawable.ic_file_copy_filled),
+                                    contentDescription = stringResource(R.string.generic_copy)
+                                )
+                            },
+                            onClick = {
+                                onCopyClick()
+                                menuExpanded = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text(text = stringResource(R.string.versions_export)) },
+                            leadingIcon = {
+                                Icon(
+                                    modifier = Modifier.size(20.dp),
+                                    painter = painterResource(R.drawable.ic_folder_zip_filled),
+                                    contentDescription = stringResource(R.string.versions_export)
+                                )
+                            },
+                            onClick = {
+                                onExportClick()
+                                menuExpanded = false
+                            }
+                        )
+
+                        val cardExists by remember(version) {
+                            VersionCardManager.cards.map { states ->
+                                states.any {
+                                    it.record.versionName == version.getVersionName() &&
+                                        it.record.dir == VersionCardDir.fromGameHome(version.getGameHome())
+                                }
+                            }
+                        }.collectAsStateWithLifecycle(
+                            VersionCardManager.hasCard(version.getVersionName(), version.getGameHome())
+                        )
+
+                        DropdownMenuItem(
+                            text = { Text(text = stringResource(R.string.home_add_version_card)) },
+                            leadingIcon = {
+                                Icon(
+                                    modifier = Modifier.size(20.dp),
+                                    painter = painterResource(R.drawable.ic_add_box_filled),
+                                    contentDescription = stringResource(R.string.home_add_version_card)
+                                )
+                            },
+                            enabled = version.isValid() && !cardExists,
+                            onClick = {
+                                VersionCardManager.addCard(version)
+                                menuExpanded = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text(text = stringResource(R.string.generic_delete)) },
+                            leadingIcon = {
+                                Icon(
+                                    modifier = Modifier.size(20.dp),
+                                    painter = painterResource(R.drawable.ic_delete_filled),
+                                    contentDescription = stringResource(R.string.generic_delete)
+                                )
+                            },
+                            onClick = {
+                                onDeleteClick()
+                                menuExpanded = false
+                            }
+                        )
+                    }
                 }
             }
         }
