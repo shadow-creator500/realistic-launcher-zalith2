@@ -19,11 +19,17 @@
 package com.movtery.zalithlauncher.ui.screens.content
 
 import android.content.Context
+import android.net.wifi.WifiManager
 import android.content.ClipboardManager
 import android.content.ClipData
 import androidx.compose.animation.AnimatedVisibility
 import java.net.NetworkInterface
 import java.net.Inet4Address
+import java.net.SocketTimeoutException
+import java.net.MulticastSocket
+import java.net.InetSocketAddress
+import java.net.InetAddress
+import java.net.DatagramPacket
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Button
 import androidx.compose.foundation.ScrollState
@@ -43,6 +49,9 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
@@ -60,6 +69,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.font.FontWeight
 import com.movtery.zalithlauncher.R
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
 import com.movtery.zalithlauncher.notification.NotificationManager
 import com.movtery.zalithlauncher.path.PathManager
 import com.movtery.zalithlauncher.path.URL_EASYTIER
@@ -213,6 +225,10 @@ private fun LocalLanCard(
 ) {
     var localAddress by remember { mutableStateOf(findLocalLanAddress()) }
     var gamePort by remember { mutableStateOf("") }
+    var discoveredWorlds by remember { mutableStateOf<List<DiscoveredLanWorld>>(emptyList()) }
+    var isScanning by remember { mutableStateOf(false) }
+    var scanFinished by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
     val validPort = gamePort.toIntOrNull()?.takeIf { it in 1..65535 }
 
     BackgroundCard(
@@ -283,9 +299,173 @@ private fun LocalLanCard(
                     Text("ATUALIZAR IP")
                 }
             }
+
+            FilledTonalButton(
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !isScanning,
+                onClick = {
+                    scope.launch {
+                        isScanning = true
+                        scanFinished = false
+                        discoveredWorlds = discoverLocalLanWorlds(context)
+                        isScanning = false
+                        scanFinished = true
+                        if (discoveredWorlds.isEmpty()) {
+                            eventViewModel.sendToast(androidText("Nenhum mundo LAN encontrado nesta rede"))
+                        }
+                    }
+                }
+            ) {
+                Text(if (isScanning) "PROCURANDO MUNDOS..." else "BUSCAR MUNDOS NA REDE")
+            }
+
+            if (isScanning) {
+                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                Text(
+                    text = "Procurando partidas abertas na mesma rede...",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            discoveredWorlds.forEach { world ->
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    color = MaterialTheme.colorScheme.surfaceContainerLow,
+                    shape = MaterialTheme.shapes.large
+                ) {
+                    Column(
+                        modifier = Modifier.padding(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text(
+                            text = world.motd.ifBlank { "Mundo Minecraft na rede" },
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Text(
+                            text = "${world.address}:${world.port}",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        FilledTonalButton(
+                            onClick = {
+                                val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+                                clipboard?.setPrimaryClip(
+                                    ClipData.newPlainText("REALISTIC LAN ADDRESS", "${world.address}:${world.port}")
+                                )
+                                eventViewModel.sendToast(androidText("Endereço do mundo copiado"))
+                            }
+                        ) {
+                            Text("COPIAR ENDEREÇO")
+                        }
+                    }
+                }
+            }
+
+            if (scanFinished && discoveredWorlds.isNotEmpty()) {
+                Text(
+                    text = "${discoveredWorlds.size} mundo(s) encontrado(s). Toque em copiar e use o endereço na tela Multijogador do Minecraft.",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
     }
 }
+
+private data class DiscoveredLanWorld(
+    val address: String,
+    val port: Int,
+    val motd: String
+)
+
+/**
+ * Escuta o anúncio multicast padrão do Minecraft Java durante alguns segundos.
+ * O Android exige MulticastLock para permitir a recepção multicast no Wi-Fi.
+ */
+private suspend fun discoverLocalLanWorlds(context: Context): List<DiscoveredLanWorld> =
+    withContext(Dispatchers.IO) {
+        val wifiManager = context.applicationContext
+            .getSystemService(Context.WIFI_SERVICE) as? WifiManager
+        val multicastLock = runCatching {
+            wifiManager?.createMulticastLock("realistic-lan-discovery")?.apply {
+                setReferenceCounted(false)
+                acquire()
+            }
+        }.getOrNull()
+
+        val socket = runCatching { MulticastSocket(null) }.getOrNull()
+        if (socket == null) {
+            runCatching { multicastLock?.release() }
+            return@withContext emptyList()
+        }
+
+        val discovered = linkedMapOf<String, DiscoveredLanWorld>()
+        val group = InetAddress.getByName("224.0.2.60")
+        val port = 4445
+        val joinedInterfaces = mutableListOf<NetworkInterface>()
+
+        try {
+            socket.reuseAddress = true
+            socket.bind(InetSocketAddress(port))
+            socket.soTimeout = 500
+
+            val interfaces = runCatching {
+                NetworkInterface.getNetworkInterfaces()?.toList().orEmpty()
+            }.getOrDefault(emptyList()).filter { networkInterface ->
+                runCatching {
+                    networkInterface.isUp &&
+                        !networkInterface.isLoopback &&
+                        networkInterface.supportsMulticast()
+                }.getOrDefault(false)
+            }
+
+            interfaces.forEach { networkInterface ->
+                runCatching {
+                    socket.joinGroup(InetSocketAddress(group, port), networkInterface)
+                    joinedInterfaces.add(networkInterface)
+                }
+            }
+
+            if (joinedInterfaces.isEmpty()) {
+                runCatching { socket.joinGroup(group) }
+            }
+
+            val stopAt = System.currentTimeMillis() + 5_000L
+            while (System.currentTimeMillis() < stopAt) {
+                val bytes = ByteArray(2048)
+                val packet = DatagramPacket(bytes, bytes.size)
+                try {
+                    socket.receive(packet)
+                } catch (_: SocketTimeoutException) {
+                    continue
+                }
+
+                val payload = String(packet.data, packet.offset, packet.length, Charsets.UTF_8)
+                val motd = Regex("\\[MOTD](.*?)\\[/MOTD]", RegexOption.DOT_MATCHES_ALL)
+                    .find(payload)?.groupValues?.getOrNull(1)?.trim()
+                val advertisedPort = Regex("\\[AD](\\d+)\\[/AD]")
+                    .find(payload)?.groupValues?.getOrNull(1)?.toIntOrNull()
+                    ?.takeIf { it in 1..65535 }
+                val address = (packet.address as? Inet4Address)?.hostAddress
+
+                if (!motd.isNullOrBlank() && advertisedPort != null && !address.isNullOrBlank()) {
+                    val world = DiscoveredLanWorld(address, advertisedPort, motd)
+                    discovered["${world.address}:${world.port}"] = world
+                }
+            }
+        } catch (_: Exception) {
+            // Busca local não deve derrubar a tela quando a rede bloquear multicast.
+        } finally {
+            joinedInterfaces.forEach { networkInterface ->
+                runCatching { socket.leaveGroup(InetSocketAddress(group, port), networkInterface) }
+            }
+            runCatching { socket.close() }
+            runCatching { multicastLock?.release() }
+        }
+
+        discovered.values.toList()
+    }
 
 private fun findLocalLanAddress(): String? {
     return runCatching {
