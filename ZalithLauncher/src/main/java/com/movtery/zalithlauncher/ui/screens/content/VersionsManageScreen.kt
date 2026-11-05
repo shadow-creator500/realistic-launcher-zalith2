@@ -19,6 +19,7 @@
 package com.movtery.zalithlauncher.ui.screens.content
 
 import android.os.Environment
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -39,10 +40,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.nonInteractiveScrollbar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -71,6 +74,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -370,6 +374,54 @@ private fun LeftMenu(
         val currentPath by GamePathManager.currentPath.collectAsStateWithLifecycle()
         val context = LocalContext.current
 
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 12.dp, top = 12.dp, end = 12.dp)
+                .border(1.dp, Color(0xFF75202F), RoundedCornerShape(18.dp)),
+            color = Color(0xFF10090B),
+            shape = RoundedCornerShape(18.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 14.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.ic_realistic_launcher),
+                    contentDescription = "REALISTIC LAUNCHER",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(76.dp)
+                )
+                Text(
+                    text = "REALISTIC",
+                    color = Color.White,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Black
+                )
+                Text(
+                    text = "CRAFT",
+                    color = Color(0xFFFF2948),
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Black
+                )
+                Text(
+                    text = "GERENCIADOR DE VERSÕES",
+                    color = Color(0xFFBDBDBD),
+                    style = MaterialTheme.typography.labelSmall
+                )
+            }
+        }
+
+        Text(
+            text = "PASTAS DO JOGO",
+            color = Color(0xFFFF405B),
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 4.dp)
+        )
+
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
@@ -602,88 +654,109 @@ private fun VersionsLayout(
                         }
                         .offset { IntOffset(x = 0, y = topAppBarState.heightOffset.roundToInt()) }
                 ) {
-                    Row(
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(IntrinsicSize.Min)
-                            .padding(all = 12.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            .padding(horizontal = 12.dp, vertical = 10.dp)
+                            .border(1.dp, Color(0xFF75202F), MaterialTheme.shapes.large)
+                            .background(Color(0xFF10090B), MaterialTheme.shapes.large)
+                            .padding(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        val blur = AllSettings.backgroundBlur.state
-                        val cardColor = Color(0xFF151515)
+                        Text(
+                            text = "ESCOLHA SUA VERSÃO",
+                            color = Color.White,
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Black
+                        )
+                        Text(
+                            text = currentVersion?.let { "ATUAL: ${it.getVersionName()}" }
+                                ?: "Selecione uma instalação para jogar",
+                            color = Color(0xFFFF405B),
+                            style = MaterialTheme.typography.labelMedium
+                        )
 
-                        Surface(
+                        Row(
                             modifier = Modifier
-                                .height(IntrinsicSize.Max)
-                                .then(barShadowModifier),
-                            color = cardColor,
-                            contentColor = onCardColor(),
-                            shape = MaterialTheme.shapes.large,
+                                .fillMaxWidth()
+                                .height(IntrinsicSize.Min),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            Row(
+                            val blur = AllSettings.backgroundBlur.state
+                            val versionToolbarColor = Color(0xFF191919)
+
+                            Surface(
                                 modifier = Modifier
-                                    .backgroundGlass(blur, cardColor)
-                                    .padding(all = 8.dp),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                verticalAlignment = Alignment.CenterVertically
+                                    .height(IntrinsicSize.Max)
+                                    .then(barShadowModifier),
+                                color = versionToolbarColor,
+                                contentColor = Color.White,
+                                shape = MaterialTheme.shapes.large,
                             ) {
-                                IconTextButton(
-                                    onClick = onRefresh,
-                                    painter = painterResource(R.drawable.ic_refresh),
-                                    contentDescription = stringResource(R.string.generic_refresh),
-                                    text = stringResource(R.string.generic_refresh)
-                                )
-                                IconTextButton(
-                                    onClick = onInstall,
-                                    painter = painterResource(R.drawable.ic_download),
-                                    contentDescription = stringResource(R.string.versions_manage_install_new),
-                                    text = stringResource(R.string.versions_manage_install_new),
-                                )
-                            }
-                        }
-
-                        // 版本分类
-                        Surface(
-                            modifier = Modifier
-                                .weight(1f, fill = false)
-                                .height(IntrinsicSize.Max)
-                                .then(barShadowModifier),
-                            color = cardColor,
-                            contentColor = onCardColor(),
-                            shape = MaterialTheme.shapes.large,
-                        ) {
-                            val scrollState = rememberScrollState()
-                            Row(
-                                modifier = Modifier
-                                    .backgroundGlass(blur, cardColor)
-                                    .fadeEdge(
-                                        state = scrollState,
-                                        length = 32.dp,
-                                        direction = EdgeDirection.Horizontal
+                                Row(
+                                    modifier = Modifier
+                                        .backgroundGlass(blur, versionToolbarColor)
+                                        .padding(all = 8.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    IconTextButton(
+                                        onClick = onRefresh,
+                                        painter = painterResource(R.drawable.ic_refresh),
+                                        contentDescription = stringResource(R.string.generic_refresh),
+                                        text = stringResource(R.string.generic_refresh)
                                     )
-                                    .horizontalScroll(state = scrollState)
-                                    .padding(all = 8.dp),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                verticalAlignment = Alignment.CenterVertically
+                                    IconTextButton(
+                                        onClick = onInstall,
+                                        painter = painterResource(R.drawable.ic_download),
+                                        contentDescription = stringResource(R.string.versions_manage_install_new),
+                                        text = stringResource(R.string.versions_manage_install_new),
+                                    )
+                                }
+                            }
+
+                            Surface(
+                                modifier = Modifier
+                                    .weight(1f, fill = false)
+                                    .height(IntrinsicSize.Max)
+                                    .then(barShadowModifier),
+                                color = versionToolbarColor,
+                                contentColor = Color.White,
+                                shape = MaterialTheme.shapes.large,
                             ) {
-                                VersionCategoryItem(
-                                    value = VersionCategory.ALL,
-                                    versionsCount = allVersionsCount,
-                                    selected = versionCategory == VersionCategory.ALL,
-                                    onClick = { onCategoryChange(VersionCategory.ALL) }
-                                )
-                                VersionCategoryItem(
-                                    value = VersionCategory.VANILLA,
-                                    versionsCount = vanillaVersionsCount,
-                                    selected = versionCategory == VersionCategory.VANILLA,
-                                    onClick = { onCategoryChange(VersionCategory.VANILLA) }
-                                )
-                                VersionCategoryItem(
-                                    value = VersionCategory.MODLOADER,
-                                    versionsCount = modloaderVersionsCount,
-                                    selected = versionCategory == VersionCategory.MODLOADER,
-                                    onClick = { onCategoryChange(VersionCategory.MODLOADER) }
-                                )
+                                val scrollState = rememberScrollState()
+                                Row(
+                                    modifier = Modifier
+                                        .backgroundGlass(blur, versionToolbarColor)
+                                        .fadeEdge(
+                                            state = scrollState,
+                                            length = 32.dp,
+                                            direction = EdgeDirection.Horizontal
+                                        )
+                                        .horizontalScroll(state = scrollState)
+                                        .padding(all = 8.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    VersionCategoryItem(
+                                        value = VersionCategory.ALL,
+                                        versionsCount = allVersionsCount,
+                                        selected = versionCategory == VersionCategory.ALL,
+                                        onClick = { onCategoryChange(VersionCategory.ALL) }
+                                    )
+                                    VersionCategoryItem(
+                                        value = VersionCategory.VANILLA,
+                                        versionsCount = vanillaVersionsCount,
+                                        selected = versionCategory == VersionCategory.VANILLA,
+                                        onClick = { onCategoryChange(VersionCategory.VANILLA) }
+                                    )
+                                    VersionCategoryItem(
+                                        value = VersionCategory.MODLOADER,
+                                        versionsCount = modloaderVersionsCount,
+                                        selected = versionCategory == VersionCategory.MODLOADER,
+                                        onClick = { onCategoryChange(VersionCategory.MODLOADER) }
+                                    )
+                                }
                             }
                         }
                     }
