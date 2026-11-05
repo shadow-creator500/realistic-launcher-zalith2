@@ -28,7 +28,7 @@ import com.movtery.zalithlauncher.ui.components.influencedByBackgroundColor
 
 /** 应用整体背景的颜色 */
 @Composable
-fun backgroundColor(): Color = MaterialTheme.colorScheme.surfaceContainer
+fun backgroundColor(): Color = MaterialTheme.colorScheme.background
 @Composable
 fun onBackgroundColor(): Color = MaterialTheme.colorScheme.onSurfaceVariant
 
@@ -43,7 +43,7 @@ fun onBackgroundColor(): Color = MaterialTheme.colorScheme.onSurfaceVariant
 fun cardColor(
     influencedByBackground: Boolean = true
 ): Color = influencedByBackgroundColor(
-    color = MaterialTheme.colorScheme.surfaceBright,
+    color = MaterialTheme.colorScheme.surfaceContainerHigh,
     enabled = influencedByBackground
 )
 @Composable
