@@ -42,7 +42,6 @@ import com.movtery.guide.GuideController
 import com.movtery.guide.NextTip
 import com.movtery.guide.NodeClickMode
 import com.movtery.guide.rememberGuide
-import com.movtery.zalithlauncher.BuildKeys
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.utils.logging.Logger
 import com.movtery.zalithlauncher.viewmodel.EventViewModel
@@ -113,7 +112,7 @@ fun rememberAppGuides(
 private fun rememberMainGuides() = rememberGuide(holeRadius = 28.dp) {
     intro {
         GuideCard {
-            Text(stringResource(R.string.guide_main_welcome_title, BuildKeys.LAUNCHER_NAME))
+            Text(stringResource(R.string.guide_main_welcome_title, "REALISTIC LAUNCHER"))
             Text(stringResource(R.string.guide_main_welcome_text))
         }
     }
