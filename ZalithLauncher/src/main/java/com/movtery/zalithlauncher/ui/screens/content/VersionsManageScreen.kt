@@ -401,7 +401,7 @@ private fun LeftMenu(
                     fontWeight = FontWeight.Black
                 )
                 Text(
-                    text = "CRAFT",
+                    text = "LAUNCHER",
                     color = Color(0xFFFF2948),
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Black
@@ -663,18 +663,54 @@ private fun VersionsLayout(
                             .padding(12.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Text(
-                            text = "ESCOLHA SUA VERSÃO",
-                            color = Color.White,
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Black
-                        )
-                        Text(
-                            text = currentVersion?.let { "ATUAL: ${it.getVersionName()}" }
-                                ?: "Selecione uma instalação para jogar",
-                            color = Color(0xFFFF405B),
-                            style = MaterialTheme.typography.labelMedium
-                        )
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(3.dp)
+                        ) {
+                            Text(
+                                text = "Fala, meu cria! 👊",
+                                color = Color.White,
+                                style = MaterialTheme.typography.headlineSmall,
+                                fontWeight = FontWeight.Black
+                            )
+                            Text(
+                                text = "Pronto pra escolher sua próxima aventura?",
+                                color = Color(0xFFBDBDBD),
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+
+                        Surface(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .border(1.dp, Color(0xFFB51E35), RoundedCornerShape(16.dp)),
+                            color = Color(0xFF17070A),
+                            shape = RoundedCornerShape(16.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
+                                verticalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                Text(
+                                    text = "SUAS VERSÕES",
+                                    color = Color.White,
+                                    style = MaterialTheme.typography.titleLarge,
+                                    fontWeight = FontWeight.Black,
+                                    letterSpacing = 1.sp
+                                )
+                                Text(
+                                    text = "${versions.size} instalações disponíveis  •  MINECRAFT JAVA",
+                                    color = Color(0xFFBDBDBD),
+                                    style = MaterialTheme.typography.labelSmall
+                                )
+                                Text(
+                                    text = currentVersion?.let { "ATUAL: ${it.getVersionName()}" }
+                                        ?: "Nenhuma versão selecionada",
+                                    color = Color(0xFFFF405B),
+                                    style = MaterialTheme.typography.labelMedium,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
 
                         Row(
                             modifier = Modifier
