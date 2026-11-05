@@ -18,7 +18,14 @@
 
 package com.movtery.zalithlauncher.ui.screens.content
 
+import android.content.Context
+import android.content.ClipboardManager
+import android.content.ClipData
 import androidx.compose.animation.AnimatedVisibility
+import java.net.NetworkInterface
+import java.net.Inet4Address
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Button
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -193,6 +200,107 @@ fun MultiplayerScreen(
     }
 }
 
+
+/**
+ * Primeira ferramenta do modo LAN local: informa e copia o IPv4 privado
+ * da interface de rede ativa. A porta continua sendo a anunciada pelo Minecraft.
+ */
+@Composable
+private fun LocalLanCard(
+    context: Context,
+    eventViewModel: EventViewModel
+) {
+    var localAddress by remember { mutableStateOf(findLocalLanAddress()) }
+
+    BackgroundCard(
+        modifier = Modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.extraLarge
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = "LAN LOCAL • WI-FI / HOTSPOT",
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Text(
+                text = "Conecte os celulares à mesma rede. O anfitrião deve abrir o mundo para LAN no menu de pausa do Minecraft.",
+                style = MaterialTheme.typography.bodySmall
+            )
+            Text(
+                text = localAddress ?: "Não foi possível identificar um IP local. Verifique o Wi-Fi ou hotspot.",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold
+            )
+            Text(
+                text = "Compartilhe este IP junto com a porta que o Minecraft mostrar no chat do anfitrião.",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Button(
+                    modifier = Modifier.weight(1f),
+                    enabled = localAddress != null,
+                    onClick = {
+                        val address = localAddress ?: return@Button
+                        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+                        clipboard?.setPrimaryClip(ClipData.newPlainText("REALISTIC LAN IP", address))
+                        eventViewModel.sendToast(androidText("IP local copiado"))
+                    }
+                ) {
+                    Text("COPIAR IP")
+                }
+                FilledTonalButton(
+                    modifier = Modifier.weight(1f),
+                    onClick = {
+                        localAddress = findLocalLanAddress()
+                        if (localAddress == null) {
+                            eventViewModel.sendToast(androidText("Nenhum IP local encontrado"))
+                        }
+                    }
+                ) {
+                    Text("ATUALIZAR")
+                }
+            }
+        }
+    }
+}
+
+private fun findLocalLanAddress(): String? {
+    return runCatching {
+        val interfaces = NetworkInterface.getNetworkInterfaces()?.toList().orEmpty()
+            .filter { networkInterface ->
+                runCatching { networkInterface.isUp && !networkInterface.isLoopback }.getOrDefault(false)
+            }
+
+        val candidates = interfaces.flatMap { networkInterface ->
+            networkInterface.inetAddresses.toList()
+                .filterIsInstance<Inet4Address>()
+                .filter { address ->
+                    !address.isLoopbackAddress && !address.isLinkLocalAddress && address.isSiteLocalAddress
+                }
+                .mapNotNull { address ->
+                    address.hostAddress?.let { host -> networkInterface.name to host }
+                }
+        }
+
+        candidates.sortedBy { (interfaceName, _) ->
+            when {
+                interfaceName.startsWith("wlan", ignoreCase = true) -> 0
+                interfaceName.startsWith("ap", ignoreCase = true) -> 1
+                interfaceName.startsWith("wifi", ignoreCase = true) -> 2
+                else -> 3
+            }
+        }.firstOrNull()?.second
+    }.getOrNull()
+}
+
 private sealed interface MultiplayerOperation {
     data object None : MultiplayerOperation
     data object Notice : MultiplayerOperation
@@ -270,6 +378,8 @@ private fun MainMenu(
             .padding(vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
+        LocalLanCard(context = context, eventViewModel = eventViewModel)
+
 //        //关于地区的警告
 //        BackgroundCard(
 //            modifier = Modifier.fillMaxWidth(),
