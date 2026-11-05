@@ -212,34 +212,54 @@ fun HomeGrid(
                 .padding(6.dp),
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            Column(
+            Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 10.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                    .padding(horizontal = 6.dp, vertical = 8.dp),
+                shape = MaterialTheme.shapes.large,
+                color = MaterialTheme.colorScheme.surfaceContainerLow,
+                contentColor = MaterialTheme.colorScheme.onSurface
             ) {
-                Text(
-                    text = "REALISTIC CRAFT",
-                    color = MaterialTheme.colorScheme.primary,
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Black,
-                    letterSpacing = 1.5.sp
-                )
-                Text(
-                    text = "CENTRAL DE JOGO  •  MINECRAFT JAVA",
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.labelMedium,
-                    letterSpacing = 1.sp
-                )
-                Surface(
-                    modifier = Modifier
-                        .padding(top = 5.dp)
-                        .size(width = 52.dp, height = 3.dp),
-                    color = MaterialTheme.colorScheme.primary,
-                    shape = CircleShape
-                ) {}
+                Column(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
+                    verticalArrangement = Arrangement.spacedBy(5.dp)
+                ) {
+                    Text(
+                        text = "REALISTIC CRAFT",
+                        color = MaterialTheme.colorScheme.primary,
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Black,
+                        letterSpacing = 1.5.sp
+                    )
+                    Text(
+                        text = "CENTRAL DE JOGO  •  MINECRAFT JAVA",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.labelMedium,
+                        letterSpacing = 1.sp
+                    )
+                    Text(
+                        text = "Seu mundo começa aqui. Escolha uma opção para continuar.",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    Surface(
+                        modifier = Modifier
+                            .padding(top = 5.dp)
+                            .size(width = 52.dp, height = 3.dp),
+                        color = MaterialTheme.colorScheme.primary,
+                        shape = CircleShape
+                    ) {}
+                }
             }
 
+            Text(
+                text = "INÍCIO RÁPIDO",
+                modifier = Modifier.padding(start = 10.dp, top = 8.dp, bottom = 2.dp),
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 1.sp
+            )
             val systemCards = HomeCards.systemCards()
             if (!systemCards.isEmpty()) {
                 Column(
@@ -258,6 +278,14 @@ fun HomeGrid(
                 }
             }
 
+            Text(
+                text = "SEUS ATALHOS",
+                modifier = Modifier.padding(start = 10.dp, top = 16.dp, bottom = 2.dp),
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 1.sp
+            )
             CardGrid(
                 state = state,
                 containerColor = cardColor(),
