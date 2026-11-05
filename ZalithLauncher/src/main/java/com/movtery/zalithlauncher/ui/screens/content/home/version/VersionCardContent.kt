@@ -35,6 +35,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -46,6 +47,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.input.pointer.pointerInput
@@ -423,7 +425,14 @@ private fun CardTexts(
 @Composable
 private fun TextLaunchButton(version: Version, modifier: Modifier = Modifier) {
     val onLaunch = LocalHomeCardLauncher.current
-    Button(onClick = { onLaunch(version) }, modifier = modifier) {
+    Button(
+        onClick = { onLaunch(version) },
+        modifier = modifier,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color(0xFFE5092A),
+            contentColor = Color.White
+        )
+    ) {
         Icon(
             modifier = Modifier.size(16.dp),
             painter = painterResource(R.drawable.ic_play_arrow_filled),
@@ -443,7 +452,11 @@ private fun CompactLaunchButton(version: Version, modifier: Modifier = Modifier)
     Button(
         onClick = { onLaunch(version) },
         modifier = modifier,
-        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
+        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color(0xFFE5092A),
+            contentColor = Color.White
+        )
     ) {
         Icon(
             modifier = Modifier.size(14.dp),
@@ -466,7 +479,11 @@ private fun IconLaunchButton(version: Version, modifier: Modifier = Modifier) {
         onClick = { onLaunch(version) },
         modifier = modifier,
         shape = CircleShape,
-        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
+        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color(0xFFE5092A),
+            contentColor = Color.White
+        )
     ) {
         Icon(
             modifier = Modifier.size(14.dp),
