@@ -59,7 +59,9 @@ fun SplashScreen(
     onWelcomeFinished: () -> Unit,
     availableAgreement: StateFlow<AvailableAgreement?>,
     unpackItems: List<InstallableItem>,
-    screenViewModel: SplashBackStackViewModel
+    screenViewModel: SplashBackStackViewModel,
+    preparationItems: StateFlow<List<VersionPreparationItem>>,
+    onRetryPreparation: () -> Unit
 ) {
     NavStateHost(rootKey = screenViewModel.splashScreen) {
         NavigationUI(
@@ -68,7 +70,9 @@ fun SplashScreen(
             onWelcomeFinished = onWelcomeFinished,
             availableAgreement = availableAgreement,
             unpackItems = unpackItems,
-            screenViewModel = screenViewModel
+            screenViewModel = screenViewModel,
+            preparationItems = preparationItems,
+            onRetryPreparation = onRetryPreparation
         )
     }
 }
@@ -80,7 +84,9 @@ private fun NavigationUI(
     onWelcomeFinished: () -> Unit,
     availableAgreement: StateFlow<AvailableAgreement?>,
     unpackItems: List<InstallableItem>,
-    screenViewModel: SplashBackStackViewModel
+    screenViewModel: SplashBackStackViewModel,
+    preparationItems: StateFlow<List<VersionPreparationItem>>,
+    onRetryPreparation: () -> Unit
 ) {
     val backStack = screenViewModel.splashScreen.backStack
 
@@ -107,6 +113,13 @@ private fun NavigationUI(
                         onFinished = onWelcomeFinished,
                         availableAgreement = availableAgreement,
                         screenViewModel = screenViewModel
+                    )
+                }
+                entry<SplashOperation.PreparingVersions> {
+                    PreparingVersionsScreen(
+                        items = preparationItems,
+                        screenViewModel = screenViewModel,
+                        onRetry = onRetryPreparation
                     )
                 }
                 entry<SplashOperation.Unpacking> {
