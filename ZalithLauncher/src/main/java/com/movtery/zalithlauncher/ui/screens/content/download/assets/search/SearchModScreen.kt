@@ -23,10 +23,10 @@ import androidx.compose.runtime.remember
 import com.movtery.zalithlauncher.game.download.assets.platform.Platform
 import com.movtery.zalithlauncher.game.download.assets.platform.PlatformClasses
 import com.movtery.zalithlauncher.game.download.assets.platform.curseforge.models.CurseForgeModCategory
-import com.movtery.zalithlauncher.game.download.assets.platform.curseforge.models.curseForgeModLoaderFilters
+import com.movtery.zalithlauncher.game.download.assets.platform.curseforge.models.CurseForgeModLoader
 import com.movtery.zalithlauncher.game.download.assets.platform.modrinth.models.ModrinthFeatures
+import com.movtery.zalithlauncher.game.download.assets.platform.modrinth.models.ModrinthModLoaderCategory
 import com.movtery.zalithlauncher.game.download.assets.platform.modrinth.models.ModrinthModCategory
-import com.movtery.zalithlauncher.game.download.assets.platform.modrinth.models.modrinthModLoaderFilters
 import com.movtery.zalithlauncher.game.version.mod.InstalledMod
 import com.movtery.zalithlauncher.setting.AllSettings
 import com.movtery.zalithlauncher.ui.screens.NormalNavKey
@@ -66,8 +66,14 @@ fun SearchModScreen(
         enableModLoader = true,
         getModloaders = { platform ->
             when (platform) {
-                Platform.CURSEFORGE -> curseForgeModLoaderFilters
-                Platform.MODRINTH -> modrinthModLoaderFilters
+                Platform.CURSEFORGE -> listOf(CurseForgeModLoader.FABRIC)
+                Platform.MODRINTH -> listOf(ModrinthModLoaderCategory.FABRIC)
+            }
+        },
+        defaultModLoader = { platform ->
+            when (platform) {
+                Platform.CURSEFORGE -> CurseForgeModLoader.FABRIC
+                Platform.MODRINTH -> ModrinthModLoaderCategory.FABRIC
             }
         },
         mapCategories = { platform, string ->
