@@ -415,7 +415,7 @@ class SplashActivity : BaseAppCompatActivity() {
             }
 
             if (_preparationItems.value.none { it.status == PreparationStatus.FAILED }) {
-                VersionsManager.refresh("REALISTIC_LAUNCHER.initialPreparation")
+                VersionsManager.refresh("REALISTIC_LAUNCHER.initialPreparation", trySetVersion = "REALISTIC-1.21.1-Fabric")
                 swapToMain()
             }
         }
