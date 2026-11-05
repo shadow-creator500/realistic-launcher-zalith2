@@ -337,11 +337,11 @@ fun SearchAssetsScreen(
                     letterSpacing = 0.8.sp
                 )
             }
-            Row(modifier = Modifier.weight(1f)) {
+            Column(modifier = Modifier.weight(1f)) {
             val resultCtx = rememberAnimatedContext(isVisible = isVisible)
             ResultListLayout(
                 modifier = Modifier
-                    .fillMaxHeight()
+                    .fillMaxWidth()
                     .weight(7f)
                     .animated(resultCtx),
                 classes = platformClasses,
@@ -403,7 +403,7 @@ fun SearchAssetsScreen(
             val searchedVersions by viewModel.searchedVersions.collectAsStateWithLifecycle()
             SearchFilter(
                 modifier = Modifier
-                    .fillMaxHeight()
+                    .fillMaxWidth()
                     .weight(3f)
                     .animated(filterCtx, from = AnimatedDirection.Right),
                 contentPadding = PaddingValues(top = 12.dp, bottom = 12.dp, end = 12.dp),
