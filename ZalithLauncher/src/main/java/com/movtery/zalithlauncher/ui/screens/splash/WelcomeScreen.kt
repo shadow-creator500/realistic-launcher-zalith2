@@ -248,15 +248,7 @@ private fun WelcomeTerminal(
         welcomeText = ""
         welcomeFinished = false
         delay(700.milliseconds)
-        "WEL".forEach { character ->
-            welcomeText += character
-            delay(85.milliseconds)
-        }
-
-        // 中途小小休息
-        delay(420.milliseconds)
-
-        "COME!".forEach { character ->
+        "REALISTIC".forEach { character ->
             welcomeText += character
             delay(85.milliseconds)
         }
@@ -321,8 +313,8 @@ private fun WelcomeTerminal(
                         style = MaterialTheme.typography.displayLarge,
                         fontFamily = FontFamily.Monospace,
                         fontWeight = FontWeight.Black,
-                        fontSize = 56.sp,
-                        letterSpacing = (-2).sp,
+                        fontSize = 40.sp,
+                        letterSpacing = (-1.5).sp,
                         maxLines = 1
                     )
                     // 模拟终端指针
@@ -333,10 +325,26 @@ private fun WelcomeTerminal(
                         color = MaterialTheme.colorScheme.primary,
                         fontFamily = FontFamily.Monospace,
                         fontWeight = FontWeight.Black,
-                        fontSize = 56.sp,
+                        fontSize = 40.sp,
                         maxLines = 1
                     )
                 }
+
+                Text(
+                    text = "LAUNCHER",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    fontFamily = FontFamily.Monospace,
+                    fontWeight = FontWeight.Black,
+                    letterSpacing = 3.sp,
+                    modifier = Modifier.welcomeEntrance(
+                        isVisible = isVisible,
+                        durationMillis = 900,
+                        enter = welcomeFinished,
+                        offsetX = 0.dp,
+                        offsetY = 24.dp
+                    )
+                )
 
                 Spacer(modifier = Modifier.height(8.dp))
 
