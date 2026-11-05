@@ -77,6 +77,7 @@ import kotlinx.coroutines.withContext
 import org.jackhuang.hmcl.addon.AddonProjectInfo
 
 private const val TAG = "SearchAssetsScreen"
+private val supportedModVersions = listOf("1.21.1", "1.20.1", "1.19.2")
 
 /**
  * 资源搜索屏幕的 view model
@@ -133,8 +134,13 @@ private class SearchScreenViewModel(
      * 仅更新版本名称
      */
     fun updateVersionFilter(version: String) {
-        searchFilter = searchFilter.copy(gameVersion = version)
-        refreshVerSuggestions(version)
+        val selectedVersion = if (platformClasses == PlatformClasses.MOD) {
+            version.takeIf { it in supportedModVersions } ?: return
+        } else {
+            version
+        }
+        searchFilter = searchFilter.copy(gameVersion = selectedVersion)
+        refreshVerSuggestions(selectedVersion)
     }
 
     private fun refreshVerSuggestions(
@@ -143,9 +149,8 @@ private class SearchScreenViewModel(
         currentSearchVersionJob?.cancel()
         currentSearchVersionJob = viewModelScope.launch {
             val allVersions = MinecraftVersions.allVersions.value
-            val allowedModVersions = listOf("1.21.1", "1.20.1", "1.19.2")
             val result: List<String> = if (platformClasses == PlatformClasses.MOD) {
-                allowedModVersions.filter { it.contains(version) }
+                supportedModVersions.filter { it.contains(version) }
             } else {
                 when {
                     version.isEmpty() -> popularVersions
@@ -180,7 +185,16 @@ private class SearchScreenViewModel(
      */
     fun researchWithFilter(filter: PlatformSearchFilter) {
         pages.clear()
-        searchFilter = filter.copy(index = 0) //重置索引到起始处
+        val normalizedFilter = if (platformClasses == PlatformClasses.MOD) {
+            filter.copy(
+                gameVersion = filter.gameVersion.takeIf { it in supportedModVersions }
+                    ?: supportedModVersions.first(),
+                modloader = defaultModLoader(searchPlatform)
+            )
+        } else {
+            filter
+        }
+        searchFilter = normalizedFilter.copy(index = 0) //重置索引到起始处
         search()
     }
 
@@ -427,6 +441,7 @@ fun SearchAssetsScreen(
                 searchedMcMods = searchedMcMods,
                 searchedVersions = searchedVersions,
                 gameVersion = viewModel.searchFilter.gameVersion,
+                gameVersionReadOnly = platformClasses == PlatformClasses.MOD,
                 onGameVersionChange = {
                     viewModel.updateVersionFilter(it)
                 },
