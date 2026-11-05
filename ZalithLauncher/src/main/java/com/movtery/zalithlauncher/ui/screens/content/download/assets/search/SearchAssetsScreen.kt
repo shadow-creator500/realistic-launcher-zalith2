@@ -137,23 +137,21 @@ private class SearchScreenViewModel(
         currentSearchVersionJob?.cancel()
         currentSearchVersionJob = viewModelScope.launch {
             val allVersions = MinecraftVersions.allVersions.value
-            val allowedModVersions = setOf("1.21.1", "1.20.1", "1.19.2")
-            val result: List<String> = when {
-                version.isEmpty() -> popularVersions
-                allVersions.isEmpty() -> popularVersions.filter { ver ->
-                    ver.contains(version)
-                }.take(20) //仅展示20个搜索结果
-                else -> allVersions.filter {
-                    it.version.id.contains(version) &&
-                            //CurseForge只能使用正式版进行过滤
-                            (searchPlatform != Platform.CURSEFORGE || it.type == MinecraftVersion.Type.Release)
-                }.map { it.version.id }.take(20) //仅展示20个搜索结果
-            }.let { suggestions ->
-                if (platformClasses == PlatformClasses.MOD) {
-                    allowedModVersions.filter { allowed ->
-                        allowed.contains(version) && suggestions.contains(allowed)
-                    }
-                } else suggestions
+            val allowedModVersions = listOf("1.21.1", "1.20.1", "1.19.2")
+            val result: List<String> = if (platformClasses == PlatformClasses.MOD) {
+                allowedModVersions.filter { it.contains(version) }
+            } else {
+                when {
+                    version.isEmpty() -> popularVersions
+                    allVersions.isEmpty() -> popularVersions.filter { ver ->
+                        ver.contains(version)
+                    }.take(20) //仅展示20个搜索结果
+                    else -> allVersions.filter {
+                        it.version.id.contains(version) &&
+                                //CurseForge只能使用正式版进行过滤
+                                (searchPlatform != Platform.CURSEFORGE || it.type == MinecraftVersion.Type.Release)
+                    }.map { it.version.id }.take(20) //仅展示20个搜索结果
+                }
             }
             withContext(Dispatchers.Main) {
                 _searchedVersions.update { result }
@@ -386,7 +384,10 @@ fun SearchAssetsScreen(
                 onPlatformChange = {
                     viewModel.searchPlatform = it
                     viewModel.researchWithFilter(
-                        viewModel.searchFilter.copy(categories = emptyList(), modloader = null)
+                        viewModel.searchFilter.copy(
+                        categories = emptyList(),
+                        modloader = defaultModLoader(it)
+                    )
                     )
                     onPlatformChange(it)
                 },
