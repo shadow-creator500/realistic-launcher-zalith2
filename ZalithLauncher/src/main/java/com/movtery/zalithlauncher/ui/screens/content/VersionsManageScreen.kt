@@ -33,6 +33,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -71,6 +72,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.ViewModel
@@ -553,7 +555,12 @@ private fun VersionsLayout(
                             VersionItemLayout(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .animateItem(),
+                                    .animateItem()
+                                    .border(
+                                        width = 1.dp,
+                                        color = if (version == currentVersion) Color(0xFFFF1738) else Color(0xFF54202A),
+                                        shape = MaterialTheme.shapes.large
+                                    ),
                                 version = version,
                                 selected = version == currentVersion,
                                 color = if (version == currentVersion) Color(0xFF2B080D) else Color(0xFF171717),
@@ -604,7 +611,7 @@ private fun VersionsLayout(
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         val blur = AllSettings.backgroundBlur.state
-                        val cardColor = cardColor()
+                        val cardColor = Color(0xFF151515)
 
                         Surface(
                             modifier = Modifier
