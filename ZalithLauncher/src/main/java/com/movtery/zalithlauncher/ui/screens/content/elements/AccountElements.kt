@@ -453,10 +453,10 @@ fun LoginMenuDialog(
     ) {
         BoxWithConstraints(
             modifier = Modifier
-                .padding(all = 16.dp)
+                .padding(horizontal = 12.dp, vertical = 16.dp)
                 .heightIn(max = rememberDialogMaxHeight())
                 .fillMaxHeight()
-                .fillMaxWidth(0.6f),
+                .fillMaxWidth(0.94f),
             contentAlignment = Alignment.Center
         ) {
             Surface(
@@ -467,97 +467,114 @@ fun LoginMenuDialog(
                 shape = MaterialTheme.shapes.extraLarge,
                 color = cardColor(false),
                 contentColor = onCardColor(),
-                shadowElevation = 6.dp
+                shadowElevation = 8.dp
             ) {
-                Column(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Row(
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Column(
                         modifier = Modifier
                             .weight(1f, fill = false)
                             .fillMaxWidth()
+                            .verticalScroll(rememberScrollState())
+                            .padding(horizontal = 18.dp, vertical = 18.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        Column(
+                        Image(
+                            modifier = Modifier.size(58.dp),
+                            painter = painterResource(R.drawable.ic_realistic_launcher),
+                            contentDescription = null
+                        )
+                        Text(
+                            text = "REALISTIC LAUNCHER",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Black,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Text(
+                            text = "Entre para continuar sua aventura",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Surface(
                             modifier = Modifier
-                                .weight(1f)
-                                .verticalScroll(rememberScrollState())
-                                .padding(vertical = 12.dp)
-                                .padding(start = 12.dp, end = 6.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            //微软登录
+                                .fillMaxWidth()
+                                .padding(vertical = 2.dp)
+                                .height(2.dp),
+                            color = MaterialTheme.colorScheme.primary,
+                            shape = MaterialTheme.shapes.extraLarge
+                        ) {}
+
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 4.dp),
+                            text = "ESCOLHA COMO ENTRAR",
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        LoginItem(
+                            modifier = Modifier.fillMaxWidth(),
+                            title = stringResource(R.string.account_type_microsoft),
+                            onClick = {
+                                onMicrosoftLogin()
+                                onDismissRequest()
+                            }
+                        )
+                        LoginItem(
+                            modifier = Modifier.fillMaxWidth(),
+                            title = stringResource(R.string.account_type_local),
+                            onClick = {
+                                onLocalLogin()
+                                onDismissRequest()
+                            }
+                        )
+
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 6.dp),
+                            text = "OUTRAS FORMAS DE ENTRAR",
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        InfoLayoutTextItem(
+                            modifier = Modifier.fillMaxWidth(),
+                            title = stringResource(R.string.account_add_new_server_button),
+                            showArrow = true,
+                            onClick = {
+                                onAddAuthServer()
+                                onDismissRequest()
+                            }
+                        )
+                        authServers.forEach { server ->
                             LoginItem(
                                 modifier = Modifier.fillMaxWidth(),
-                                title = stringResource(R.string.account_type_microsoft),
+                                title = server.serverName,
+                                icon = {
+                                    IconButton(
+                                        modifier = Modifier.size(22.dp),
+                                        onClick = { onDeleteAuthServer(server) }
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(R.drawable.ic_delete_outlined),
+                                            contentDescription = stringResource(R.string.generic_delete)
+                                        )
+                                    }
+                                },
                                 onClick = {
-                                    onMicrosoftLogin()
+                                    onAuthServerLogin(server)
                                     onDismissRequest()
                                 }
                             )
-                            //离线登录
-                            LoginItem(
-                                modifier = Modifier.fillMaxWidth(),
-                                title = stringResource(R.string.account_type_local),
-                                onClick = {
-                                    onLocalLogin()
-                                    onDismissRequest()
-                                }
-                            )
-                        }
-
-                        LazyColumn(
-                            modifier = Modifier.weight(1f),
-                            contentPadding = PaddingValues(
-                                start = 6.dp,
-                                top = 12.dp,
-                                end = 12.dp,
-                                bottom = 12.dp
-                            ),
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            item {
-                                //添加认证服务器
-                                InfoLayoutTextItem(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    title = stringResource(R.string.account_add_new_server_button),
-                                    showArrow = true,
-                                    onClick = {
-                                        onAddAuthServer()
-                                        onDismissRequest()
-                                    }
-                                )
-                            }
-
-                            items(authServers) { server ->
-                                LoginItem(
-                                    title = server.serverName,
-                                    icon = {
-                                        IconButton(
-                                            modifier = Modifier.size(22.dp),
-                                            onClick = {
-                                                onDeleteAuthServer(server)
-                                            }
-                                        ) {
-                                            Icon(
-                                                painter = painterResource(R.drawable.ic_delete_outlined),
-                                                contentDescription = stringResource(R.string.generic_delete)
-                                            )
-                                        }
-                                    },
-                                    onClick = {
-                                        onAuthServerLogin(server)
-                                        onDismissRequest()
-                                    }
-                                )
-                            }
                         }
                     }
 
-                    Button(
+                    FilledTonalButton(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 12.dp)
-                            .padding(bottom = 8.dp),
+                            .padding(horizontal = 18.dp, vertical = 12.dp),
                         onClick = onDismissRequest
                     ) {
                         Text(stringResource(R.string.generic_close))
@@ -567,7 +584,6 @@ fun LoginMenuDialog(
         }
     }
 }
-
 @Preview(showBackground = true, widthDp = 800, heightDp = 480)
 @Composable
 private fun PreviewLoginMenuDialog() {
@@ -833,11 +849,23 @@ fun LocalLoginDialog(
                     modifier = Modifier.padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    Image(
+                        modifier = Modifier.size(48.dp),
+                        painter = painterResource(R.drawable.ic_realistic_launcher),
+                        contentDescription = null
+                    )
+                    Text(
+                        text = "REALISTIC LAUNCHER",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Black,
+                        color = MaterialTheme.colorScheme.primary
+                    )
                     Text(
                         text = stringResource(R.string.account_local_create_account),
-                        style = MaterialTheme.typography.titleMedium
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                    Spacer(modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.size(12.dp))
 
                     val scrollState = rememberScrollState()
                     Column(
