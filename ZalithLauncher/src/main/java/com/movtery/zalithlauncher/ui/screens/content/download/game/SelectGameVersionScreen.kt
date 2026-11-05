@@ -302,19 +302,6 @@ private fun SelectGameVersionContent(
 
                 is VersionState.None -> {
                     Column {
-                        VersionHeader(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 12.dp),
-                            versionFilter = viewModel.versionFilter,
-                            onVersionFilterChange = { viewModel.filterWith(it) },
-                            itemContainerColor = cardColor(),
-                            itemContentColor = onCardColor(),
-                            onRefreshClick = {
-                                viewModel.refresh(true)
-                            }
-                        )
-
                         VersionList(
                             modifier = Modifier.weight(1f),
                             versions = state.versions,
@@ -333,19 +320,13 @@ private fun SelectGameVersionContent(
 /**
  * 简易过滤器，过滤特定类型的版本
  */
+private val REALISTIC_SUPPORTED_VERSIONS = setOf("1.21.1", "1.20.1", "1.19.2")
+
 private fun List<MinecraftVersion>.filterVersions(
     versionFilter: VersionFilter
-) = this.filter { version ->
-    version.isType(
-        release = versionFilter.release,
-        snapshot = versionFilter.snapshot,
-        aprilFools = versionFilter.aprilFools,
-        old = versionFilter.old
-    )
-}.filter { version ->
-    //Fix：单独过滤版本名称
-    val versionId = versionFilter.id
-    versionId.isEmptyOrBlank() || version.version.id.contains(versionId)
+) = filter { version ->
+    // REALISTIC LAUNCHER only exposes its three supported Fabric game versions.
+    version.version.id in REALISTIC_SUPPORTED_VERSIONS
 }
 
 @Composable
