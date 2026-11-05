@@ -550,7 +550,7 @@ private fun WelcomeIntroduction(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = stringResource(R.string.welcome_screen_intro_primary, BuildKeys.LAUNCHER_NAME),
+                    text = stringResource(R.string.welcome_screen_intro_primary, "REALISTIC LAUNCHER"),
                     lineHeight = 26.sp
                 )
                 Text(
