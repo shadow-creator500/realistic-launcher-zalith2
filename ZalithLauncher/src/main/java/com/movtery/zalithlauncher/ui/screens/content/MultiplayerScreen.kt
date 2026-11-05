@@ -212,6 +212,8 @@ private fun LocalLanCard(
     eventViewModel: EventViewModel
 ) {
     var localAddress by remember { mutableStateOf(findLocalLanAddress()) }
+    var gamePort by remember { mutableStateOf("") }
+    val validPort = gamePort.toIntOrNull()?.takeIf { it in 1..65535 }
 
     BackgroundCard(
         modifier = Modifier.fillMaxWidth(),
@@ -237,9 +239,19 @@ private fun LocalLanCard(
                 fontWeight = FontWeight.SemiBold
             )
             Text(
-                text = "Compartilhe este IP junto com a porta que o Minecraft mostrar no chat do anfitrião.",
+                text = "Digite a porta exibida pelo Minecraft no chat depois de abrir o mundo para LAN.",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            OwnOutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = gamePort,
+                onValueChange = { value ->
+                    gamePort = value.filter(Char::isDigit).take(5)
+                },
+                label = { Text("Porta LAN do Minecraft") },
+                singleLine = true,
+                shape = MaterialTheme.shapes.large
             )
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -247,15 +259,17 @@ private fun LocalLanCard(
             ) {
                 Button(
                     modifier = Modifier.weight(1f),
-                    enabled = localAddress != null,
+                    enabled = localAddress != null && validPort != null,
                     onClick = {
                         val address = localAddress ?: return@Button
+                        val port = validPort ?: return@Button
+                        val connectionAddress = "$address:$port"
                         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
-                        clipboard?.setPrimaryClip(ClipData.newPlainText("REALISTIC LAN IP", address))
-                        eventViewModel.sendToast(androidText("IP local copiado"))
+                        clipboard?.setPrimaryClip(ClipData.newPlainText("REALISTIC LAN ADDRESS", connectionAddress))
+                        eventViewModel.sendToast(androidText("Endereço LAN copiado"))
                     }
                 ) {
-                    Text("COPIAR IP")
+                    Text("COPIAR ENDEREÇO")
                 }
                 FilledTonalButton(
                     modifier = Modifier.weight(1f),
@@ -266,7 +280,7 @@ private fun LocalLanCard(
                         }
                     }
                 ) {
-                    Text("ATUALIZAR")
+                    Text("ATUALIZAR IP")
                 }
             }
         }
