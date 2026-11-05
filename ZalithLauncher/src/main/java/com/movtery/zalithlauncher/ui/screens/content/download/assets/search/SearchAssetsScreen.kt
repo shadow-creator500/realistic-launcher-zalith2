@@ -79,13 +79,19 @@ private const val TAG = "SearchAssetsScreen"
  */
 private class SearchScreenViewModel(
     initialPlatform: Platform,
-    private val platformClasses: PlatformClasses
+    private val platformClasses: PlatformClasses,
+    defaultModLoader: (Platform) -> PlatformDisplayLabel?
 ): ViewModel() {
     var searchResult by mutableStateOf<SearchAssetsState>(SearchAssetsState.Searching)
     val pages = mutableStateListOf<AssetsPage?>()
 
     var searchPlatform by mutableStateOf(initialPlatform)
-    var searchFilter by mutableStateOf(PlatformSearchFilter())
+    var searchFilter by mutableStateOf(
+        PlatformSearchFilter(
+            gameVersion = if (platformClasses == PlatformClasses.MOD) "1.21.1" else "",
+            modloader = defaultModLoader(initialPlatform)
+        )
+    )
 
     private val _searchedMcMods = MutableStateFlow<List<AddonProjectInfo>>(emptyList())
     /** 搜索得到的所有 MCMOD 项目 */
@@ -131,6 +137,7 @@ private class SearchScreenViewModel(
         currentSearchVersionJob?.cancel()
         currentSearchVersionJob = viewModelScope.launch {
             val allVersions = MinecraftVersions.allVersions.value
+            val allowedModVersions = setOf("1.21.1", "1.20.1", "1.19.2")
             val result: List<String> = when {
                 version.isEmpty() -> popularVersions
                 allVersions.isEmpty() -> popularVersions.filter { ver ->
@@ -141,6 +148,12 @@ private class SearchScreenViewModel(
                             //CurseForge只能使用正式版进行过滤
                             (searchPlatform != Platform.CURSEFORGE || it.type == MinecraftVersion.Type.Release)
                 }.map { it.version.id }.take(20) //仅展示20个搜索结果
+            }.let { suggestions ->
+                if (platformClasses == PlatformClasses.MOD) {
+                    allowedModVersions.filter { allowed ->
+                        allowed.contains(version) && suggestions.contains(allowed)
+                    }
+                } else suggestions
             }
             withContext(Dispatchers.Main) {
                 _searchedVersions.update { result }
@@ -228,13 +241,14 @@ private class SearchScreenViewModel(
 private fun rememberSearchAssetsViewModel(
     navKey: TitledNavKey,
     initialPlatform: Platform,
-    platformClasses: PlatformClasses
+    platformClasses: PlatformClasses,
+    defaultModLoader: (Platform) -> PlatformDisplayLabel?
 ): SearchScreenViewModel {
     val screenKey = navKey.toString()
     return viewModel(
         key = "${screenKey}_search"
     ) {
-        SearchScreenViewModel(initialPlatform, platformClasses)
+        SearchScreenViewModel(initialPlatform, platformClasses, defaultModLoader)
     }
 }
 
@@ -269,6 +283,7 @@ fun SearchAssetsScreen(
     getCategories: (Platform) -> List<PlatformFilterCode>,
     enableModLoader: Boolean = false,
     getModloaders: (Platform) -> List<PlatformDisplayLabel> = { emptyList() },
+    defaultModLoader: (Platform) -> PlatformDisplayLabel? = { null },
     mapCategories: (Platform, String) -> PlatformFilterCode?,
     swapToDownload: (Platform, projectId: String, iconUrl: String?) -> Unit = { _, _, _ -> },
     installedInfo: ((Platform, projectId: String) -> InstalledMod?)? = null,
@@ -277,7 +292,8 @@ fun SearchAssetsScreen(
     val viewModel: SearchScreenViewModel = rememberSearchAssetsViewModel(
         navKey = screenKey,
         initialPlatform = initialPlatform,
-        platformClasses = platformClasses
+        platformClasses = platformClasses,
+        defaultModLoader = defaultModLoader
     )
 
     //跟随平台自动变更的内容
