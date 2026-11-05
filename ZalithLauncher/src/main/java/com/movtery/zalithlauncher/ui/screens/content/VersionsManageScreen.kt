@@ -32,6 +32,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -271,7 +272,9 @@ fun VersionsManageScreen(
         screenKey = NormalNavKey.VersionsManager,
         currentKey = backScreenViewModel.mainScreen.currentKey
     ) { isVisible ->
-        Row {
+        Row(
+            modifier = Modifier.fillMaxSize().background(Color(0xFF050505))
+        ) {
             LeftMenu(
                 isVisible = isVisible,
                 isRefreshing = isRefreshing,
@@ -553,6 +556,8 @@ private fun VersionsLayout(
                                     .animateItem(),
                                 version = version,
                                 selected = version == currentVersion,
+                                color = if (version == currentVersion) Color(0xFF2B080D) else Color(0xFF171717),
+                                contentColor = Color(0xFFF5F5F5),
                                 submitError = submitError,
                                 onSelected = {
                                     if (version == currentVersion) return@VersionItemLayout
