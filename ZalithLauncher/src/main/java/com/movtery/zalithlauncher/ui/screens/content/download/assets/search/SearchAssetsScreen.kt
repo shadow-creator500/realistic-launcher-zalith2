@@ -318,8 +318,12 @@ fun SearchAssetsScreen(
     val categories = remember(viewModel.searchPlatform) {
         getCategories(viewModel.searchPlatform)
     }
-    val modloaders = remember(viewModel.searchPlatform) {
-        getModloaders(viewModel.searchPlatform)
+    val modloaders = remember(viewModel.searchPlatform, platformClasses) {
+        if (platformClasses == PlatformClasses.MOD) {
+            listOfNotNull(defaultModLoader(viewModel.searchPlatform))
+        } else {
+            getModloaders(viewModel.searchPlatform)
+        }
     }
 
     BaseScreen(
