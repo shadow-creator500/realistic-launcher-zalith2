@@ -87,7 +87,7 @@ private val supportedModVersions = listOf("1.21.1", "1.20.1", "1.19.2")
 private class SearchScreenViewModel(
     initialPlatform: Platform,
     private val platformClasses: PlatformClasses,
-    defaultModLoader: (Platform) -> PlatformDisplayLabel?
+    private val defaultModLoader: (Platform) -> PlatformDisplayLabel?
 ): ViewModel() {
     var searchResult by mutableStateOf<SearchAssetsState>(SearchAssetsState.Searching)
     val pages = mutableStateListOf<AssetsPage?>()
