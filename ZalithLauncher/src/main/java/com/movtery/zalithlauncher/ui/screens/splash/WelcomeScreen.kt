@@ -73,7 +73,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.movtery.zalithlauncher.BuildKeys
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.legal.AvailableAgreement
 import com.movtery.zalithlauncher.ui.base.BaseScreen
@@ -486,12 +485,12 @@ private fun ProductBanner(
     ) {
         Image(
             modifier = Modifier.size(52.dp),
-            painter = painterResource(R.drawable.img_launcher),
+            painter = painterResource(R.drawable.ic_realistic_launcher),
             contentDescription = null
         )
 
         Text(
-            text = BuildKeys.LAUNCHER_NAME,
+            text = "REALISTIC LAUNCHER",
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold
         )
