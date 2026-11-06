@@ -149,39 +149,27 @@ private fun extractLevelPathCompress(file: File): String? {
 internal fun <T : ZipEntryBase> findLevelEntryName(
     entries: Sequence<T>
 ): String? {
-    val allEntries = entries.toList()
-
-    fun hasWorldContents(prefix: String): Boolean {
-        return allEntries.any { entry ->
-            if (entry.name == prefix || !entry.name.startsWith(prefix)) {
-                false
-            } else {
-                val relative = entry.name.removePrefix(prefix)
-                entry.isDirectory || relative.contains("/")
-            }
+    // level.dat is the reliable world marker. Do not require region/ or data/
+    // because a newly-created or deliberately minimal world can contain only this file.
+    val levelDatPaths = entries
+        .filter { entry ->
+            !entry.isDirectory &&
+                entry.name.substringAfterLast('/') == "level.dat"
         }
-    }
-
-    val levelDatEntries = allEntries.filter { entry ->
-        !entry.isDirectory && entry.name.substringAfterLast('/')
-            .equals("level.dat", ignoreCase = true)
-    }
+        .map { it.name }
+        .toList()
 
     // Prefer a world stored directly at the ZIP root.
-    if (levelDatEntries.any { it.name.equals("level.dat", ignoreCase = true) } &&
-        hasWorldContents("")
-    ) {
+    if (levelDatPaths.any { it == "level.dat" }) {
         return ""
     }
 
-    // Ignore unrelated root files (such as README.txt) and accept exactly one world folder.
-    val candidates = levelDatEntries.map { entry ->
-        entry.name.substringBeforeLast('/', missingDelimiterValue = "")
-            .takeIf { it.isNotEmpty() }
-            ?.let { "$it/" }
-    }.filterNotNull()
+    // Ignore unrelated files beside the world folder, but reject archives
+    // containing multiple possible worlds rather than importing the wrong one.
+    val candidates = levelDatPaths.map { path ->
+        path.substringBeforeLast('/', missingDelimiterValue = "")
+    }.filter { it.isNotBlank() }
         .distinct()
-        .filter(::hasWorldContents)
 
-    return candidates.singleOrNull()?.removeSuffix("/")
+    return candidates.singleOrNull()
 }
