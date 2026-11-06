@@ -255,6 +255,14 @@ fun LauncherSettingsScreen(
                     SwitchSettingsCard(
                         modifier = Modifier.fillMaxWidth(),
                         position = CardPosition.Bottom,
+                        unit = AllSettings.horizontalVersionCards,
+                        title = "Versões em faixa horizontal",
+                        summary = "Mostra as versões lado a lado; deslize para os lados para navegar."
+                    )
+
+                    SwitchSettingsCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        position = CardPosition.Middle,
                         unit = AllSettings.launcherFullScreen,
                         title = stringResource(R.string.settings_launcher_full_screen_title),
                         summary = stringResource(R.string.settings_launcher_full_screen_summary)
