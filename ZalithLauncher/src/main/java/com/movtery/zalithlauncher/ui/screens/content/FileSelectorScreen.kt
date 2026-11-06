@@ -336,8 +336,8 @@ private fun FileItem(
     modifier: Modifier = Modifier,
     file: File,
     onClick: () -> Unit = {},
-    color: Color = itemColor(),
-    contentColor: Color = onItemColor(),
+    color: Color = Color(0xFF19090D),
+    contentColor: Color = Color(0xFFFFF4F5),
 ) {
     val scale = remember { Animatable(initialValue = 0.95f) }
     LaunchedEffect(Unit) {
