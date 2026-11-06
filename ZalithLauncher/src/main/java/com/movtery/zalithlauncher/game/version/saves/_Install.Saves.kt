@@ -51,18 +51,8 @@ suspend fun unpackSaveZip(zipFile: File, targetPath: File) = withContext(Dispatc
             throw IOException("The worlds path is not a directory: $targetPath")
         }
 
-        // Never extract over an existing world. Give repeated imports a distinct folder.
-        val baseName = zipFile.nameWithoutExtension
-            .replace(Regex("""[\\/:*?"<>|\t\n]"""), "_")
-            .replace("..", "_")
-            .trim()
-            .ifBlank { "Imported World" }
-        target = File(targetPath, baseName)
-        var suffix = 2
-        while (target!!.exists()) {
-            target = File(targetPath, "$baseName (${suffix})")
-            suffix++
-        }
+        // Atomically reserve a unique destination so concurrent imports cannot overwrite each other.
+        target = createUniqueSaveDirectory(targetPath, zipFile.nameWithoutExtension)
 
         try {
             JDKZipFile(zipFile).use { zip ->
@@ -90,8 +80,36 @@ suspend fun unpackSaveZip(zipFile: File, targetPath: File) = withContext(Dispatc
         throw e
     }
 }
+internal fun createUniqueSaveDirectory(targetPath: File, archiveBaseName: String): File {
+    val baseName = archiveBaseName
+        .replace(Regex("""[\\/:*?"<>|\t\n]"""), "_")
+        .replace("..", "_")
+        .trim()
+        .take(100)
+        .ifBlank { "Imported World" }
+        .let { if (it == "." || it == "..") "Imported World" else it }
+
+    var suffix = 1
+    while (true) {
+        val folderName = if (suffix == 1) baseName else "$baseName ($suffix)"
+        val candidate = File(targetPath, folderName)
+
+        // mkdir() is atomic on the destination filesystem: only one import can claim this name.
+        if (candidate.mkdir()) return candidate
+        if (!candidate.exists()) {
+            throw IOException("Unable to reserve the world extraction directory: $candidate")
+        }
+        suffix++
+    }
+}
+
 private suspend fun tryApacheZip(zipFile: File, path: String, target: File) {
-    FileUtils.deleteQuietly(target) //清除一次目标文件夹（如果之前解压出错）
+    // Keep the destination directory reserved while removing a partial first extraction.
+    if (target.isDirectory) {
+        FileUtils.cleanDirectory(target)
+    } else if (!target.mkdirs()) {
+        throw IOException("Unable to prepare the world extraction directory: $target")
+    }
     val zipFile1 = ZipFile.Builder()
         .setFile(zipFile)
         .get()
