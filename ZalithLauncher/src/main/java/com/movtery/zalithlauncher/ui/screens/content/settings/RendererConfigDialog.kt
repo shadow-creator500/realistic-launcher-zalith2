@@ -56,6 +56,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.painterResource
@@ -146,8 +147,8 @@ fun RendererConfigDialog(
                     .heightIn(max = (maxHeight - 6.dp).coerceAtMost(rememberDialogMaxHeight()))
                     .wrapContentHeight(),
                 shadowElevation = 3.dp,
-                color = cardColor(false),
-                contentColor = onCardColor(),
+                color = Color(0xFF19090D),
+                contentColor = Color(0xFFFFF4F5),
                 shape = MaterialTheme.shapes.extraLarge
             ) {
                 Column(
@@ -246,8 +247,8 @@ private fun DialogItemLayout(
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = rememberSettingsCardShape(position),
-        color = itemColor(false),
-        contentColor = onItemColor()
+        color = Color(0xFF250D13),
+        contentColor = Color(0xFFFFF4F5)
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
