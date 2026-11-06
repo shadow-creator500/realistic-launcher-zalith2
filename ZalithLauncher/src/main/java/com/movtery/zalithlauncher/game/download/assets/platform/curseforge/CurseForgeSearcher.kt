@@ -18,6 +18,7 @@
 
 package com.movtery.zalithlauncher.game.download.assets.platform.curseforge
 
+import com.movtery.zalithlauncher.BuildKeys
 import com.movtery.zalithlauncher.game.download.assets.platform.AbstractPlatformSearcher
 import com.movtery.zalithlauncher.game.download.assets.platform.Platform
 import com.movtery.zalithlauncher.game.download.assets.platform.PlatformClasses
@@ -43,6 +44,10 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.io.File
 
+class CurseForgeApiKeyMissingException : IllegalStateException(
+    "The approved CurseForge API key is missing. Configure CURSEFORGE_API_KEY in GitHub Actions repository secrets and rebuild."
+)
+
 class CurseForgeSearcher(
     val api: String = CURSEFORGE_API,
     source: String = "Official CurseForge"
@@ -50,11 +55,18 @@ class CurseForgeSearcher(
     platform = Platform.CURSEFORGE,
     source = source
 ) {
+    private fun ensureApiKeyConfigured() {
+        if (api == CURSEFORGE_API && BuildKeys.CURSEFORGE_API.isBlank()) {
+            throw CurseForgeApiKeyMissingException()
+        }
+    }
+
     override suspend fun searchAssets(
         query: String,
         searchFilter: PlatformSearchFilter,
         platformClasses: PlatformClasses
     ): CurseForgeSearchResult {
+        ensureApiKeyConfigured()
         return httpGetJson(
             url = "$api/mods/search",
             parameters = searchFilter.toCurseForgeRequest(
@@ -65,6 +77,7 @@ class CurseForgeSearcher(
     }
 
     override suspend fun getProject(projectID: String): CurseForgeProject {
+        ensureApiKeyConfigured()
         val project = httpGetJson<CurseForgeProject>(
             url = "$api/mods/$projectID"
         )
@@ -79,6 +92,7 @@ class CurseForgeSearcher(
         projectID: String,
         fileID: String,
     ): CurseForgeVersion {
+        ensureApiKeyConfigured()
         return httpGetJson(
             url = "$api/mods/$projectID/files/$fileID"
         )
@@ -93,13 +107,16 @@ class CurseForgeSearcher(
         projectID: String,
         index: Int = 0,
         pageSize: Int = 100
-    ): CurseForgeVersions = httpGetJson(
-        url = "$api/mods/$projectID/files",
-        parameters = Parameters.build {
-            append("index", index.toString())
-            append("pageSize", pageSize.toString())
-        }
-    )
+    ): CurseForgeVersions {
+        ensureApiKeyConfigured()
+        return httpGetJson(
+            url = "$api/mods/$projectID/files",
+            parameters = Parameters.build {
+                append("index", index.toString())
+                append("pageSize", pageSize.toString())
+            }
+        )
+    }
 
     override suspend fun getVersions(
         projectID: String,
@@ -131,6 +148,7 @@ class CurseForgeSearcher(
         file: File,
         sha1: String
     ): CurseForgeFile? {
+        ensureApiKeyConfigured()
         val hash = MurmurHash2Incremental.computeHash(file, byteToSkip = listOf(0x9, 0xa, 0xd, 0x20))
         return httpPostJson<CurseForgeFingerprintsMatches>(
             url = "$api/fingerprints",
@@ -148,6 +166,7 @@ class CurseForgeSearcher(
     suspend fun getFilesByFingerprints(
         fingerprints: List<Long>
     ): Map<Long, CurseForgeFile> {
+        ensureApiKeyConfigured()
         if (fingerprints.isEmpty()) return emptyMap()
         val matches = httpPostJson<CurseForgeFingerprintsMatches>(
             url = "$api/fingerprints",
