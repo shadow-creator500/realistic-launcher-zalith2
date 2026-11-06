@@ -51,7 +51,7 @@ suspend fun unpackSaveZip(zipFile: File, targetPath: File) = withContext(Dispatc
 
     // Never extract over an existing world. Give repeated imports a distinct folder.
     val baseName = zipFile.nameWithoutExtension
-        .replace(Regex("[\\\\/:*?\\"<>|\\\\t\\\\n]"), "_")
+        .replace(Regex("""[\\/:*?"<>|\\t\\n]"""), "_")
         .replace("..", "_")
         .trim()
         .ifBlank { "Imported World" }
