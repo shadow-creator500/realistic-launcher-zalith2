@@ -61,12 +61,12 @@ object HomeCards {
 
     private val versionCardType = CardType(
         typeId = VERSION_CARD_TYPE_ID,
-        // Perfis de jogo ocupam uma linha inteira e ficam empilhados verticalmente.
-        defaultSpan = IntOffset(64, 9),
+        // Cartões compactos: permitem organizar dois perfis por linha em telas largas.
+        defaultSpan = IntOffset(30, 9),
         limits = CardLimits(
-            minWidth = 64,
+            minWidth = 26,
             minHeight = 8,
-            maxWidth = 64,
+            maxWidth = 32,
             maxHeight = 12
         ),
         content = { cardId ->
