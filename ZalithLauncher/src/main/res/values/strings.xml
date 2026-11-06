@@ -204,6 +204,7 @@
     <string name="error_unauthorized">(%s) Please check your credentials and try again</string>
     <!-- Error message for HTTP 403 responses; %s is the status code -->
     <string name="error_forbidden">(%s) You do not have permission to access this resource</string>
+    <string name="error_curseforge_api_key_missing">CurseForge needs an approved API key. Add it as the CURSEFORGE_API_KEY GitHub Actions secret, then rebuild the APK.</string>
     <!-- Error message for HTTP 404 responses; %s is the status code -->
     <string name="error_notfound">(%s) The requested resource could not be found</string>
     <!-- Error message for HTTP 406 responses; %s is the status code -->
