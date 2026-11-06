@@ -226,8 +226,8 @@ fun AssetsVersionItemLayout(
     maxListHeight: Dp = rememberMaxHeight(),
     shape: Shape = MaterialTheme.shapes.large,
     influencedByBackground: Boolean = true,
-    color: Color = cardColor(influencedByBackground),
-    contentColor: Color = onCardColor(),
+    color: Color = Color(0xFF19090D),
+    contentColor: Color = Color(0xFFFFF4F5),
     blur: Int = AllSettings.backgroundBlur.state,
     installedChecker: ((PlatformVersion) -> InstalledMod?)? = null,
     onItemClicked: (PlatformVersion) -> Unit = {}
