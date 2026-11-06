@@ -80,8 +80,6 @@ import com.movtery.zalithlauncher.ui.screens.NormalNavKey
 import com.movtery.zalithlauncher.ui.screens.TitledNavKey
 import com.movtery.zalithlauncher.ui.screens.content.elements.getGameVersionIconRes
 import com.movtery.zalithlauncher.ui.screens.content.elements.isFilenameInvalid
-import com.movtery.zalithlauncher.ui.theme.cardColor
-import com.movtery.zalithlauncher.ui.theme.onCardColor
 import com.movtery.zalithlauncher.utils.animation.getAnimateTween
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
