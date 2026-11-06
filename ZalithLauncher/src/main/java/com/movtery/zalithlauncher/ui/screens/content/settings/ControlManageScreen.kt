@@ -572,8 +572,8 @@ private fun ControlLayoutItem(
     onSelected: () -> Unit,
     onCopy: () -> Unit,
     onDelete: () -> Unit,
-    color: Color = itemColor(),
-    contentColor: Color = onItemColor(),
+    color: Color = Color(0xFF19090D),
+    contentColor: Color = Color(0xFFFFF4F5),
 ) {
     val scale = remember { Animatable(initialValue = 0.95f) }
     LaunchedEffect(Unit) {
@@ -821,8 +821,8 @@ private fun ControlInfoItem(
     title: String,
     value: String,
     onEdit: () -> Unit,
-    color: Color = itemColor(),
-    contentColor: Color = onItemColor(),
+    color: Color = Color(0xFF19090D),
+    contentColor: Color = Color(0xFFFFF4F5),
 ) {
     ControlInfoItem(
         modifier = modifier,
@@ -847,8 +847,8 @@ private fun ControlInfoItem(
 private fun ControlInfoItem(
     modifier: Modifier = Modifier,
     onEdit: () -> Unit,
-    color: Color = itemColor(),
-    contentColor: Color = onItemColor(),
+    color: Color = Color(0xFF19090D),
+    contentColor: Color = Color(0xFFFFF4F5),
     content: @Composable RowScope.() -> Unit
 ) {
     Surface(
@@ -929,8 +929,8 @@ private fun CreateNewLayoutDialog(
                     .heightIn(max = (maxHeight - 12.dp).coerceAtMost(rememberDialogMaxHeight()))
                     .wrapContentHeight(),
                 shape = MaterialTheme.shapes.extraLarge,
-                color = cardColor(false),
-                contentColor = onCardColor(),
+                color = Color(0xFF19090D),
+                contentColor = Color(0xFFFFF4F5),
                 shadowElevation = 6.dp
             ) {
                 Column(
