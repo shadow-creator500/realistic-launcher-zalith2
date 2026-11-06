@@ -21,9 +21,10 @@ package com.movtery.zalithlauncher.ui.screens
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.core.FiniteAnimationSpec
-import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -126,9 +127,32 @@ fun <T : Any> rememberTransitionSpec(): AnimatedContentTransitionScope<Scene<T>>
     return remember(level) {
         val transform: AnimatedContentTransitionScope<Scene<T>>.() -> ContentTransform = {
             val window = SwapClock.record(initialState, targetState)
+            val duration = SwapTimeline.time(SwapTimeline.CONTENT_BASE)
             ContentTransform(
-                fadeIn(animationSpec = snap(delayMillis = window.enterDelayMillis)),
-                fadeOut(animationSpec = snap(delayMillis = window.exitDelayMillis)),
+                targetContentEnter = slideInHorizontally(
+                    initialOffsetX = { width -> width / 6 },
+                    animationSpec = tween(
+                        durationMillis = duration,
+                        delayMillis = window.enterDelayMillis
+                    )
+                ) + fadeIn(
+                    animationSpec = tween(
+                        durationMillis = duration,
+                        delayMillis = window.enterDelayMillis
+                    )
+                ),
+                initialContentExit = slideOutHorizontally(
+                    targetOffsetX = { width -> -width / 6 },
+                    animationSpec = tween(
+                        durationMillis = duration,
+                        delayMillis = window.exitDelayMillis
+                    )
+                ) + fadeOut(
+                    animationSpec = tween(
+                        durationMillis = duration,
+                        delayMillis = window.exitDelayMillis
+                    )
+                )
             )
         }
         transform
