@@ -21,7 +21,10 @@ package com.movtery.zalithlauncher.game.version.saves
 import com.movtery.zalithlauncher.utils.file.ZipEntryBase
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.io.File
+import java.nio.file.Files
 
 class SaveZipImportTest {
 
@@ -126,6 +129,37 @@ class SaveZipImportTest {
         )
 
         assertNull(path)
+    }
+
+    @Test
+    fun reservesNewDirectoryWithoutOverwritingExistingWorld() {
+        val root = Files.createTempDirectory("realistic-save-import").toFile()
+        try {
+            val existing = File(root, "World")
+            assertTrue(existing.mkdir())
+            File(existing, "keep.txt").writeText("keep")
+
+            val imported = createUniqueSaveDirectory(root, "World")
+
+            assertEquals("World (2)", imported.name)
+            assertTrue(imported.isDirectory)
+            assertEquals("keep", File(existing, "keep.txt").readText())
+        } finally {
+            root.deleteRecursively()
+        }
+    }
+
+    @Test
+    fun sanitizesImportedWorldFolderName() {
+        val root = Files.createTempDirectory("realistic-save-name").toFile()
+        try {
+            val imported = createUniqueSaveDirectory(root, "unsafe/name")
+
+            assertEquals("unsafe_name", imported.name)
+            assertTrue(imported.isDirectory)
+        } finally {
+            root.deleteRecursively()
+        }
     }
 
     private data class Entry(
