@@ -269,9 +269,15 @@ private fun <E: TitledNavKey> TopBar(
     val inSettingsScreen = mainScreenKey is NestedNavKey.Settings
 
     CompositionLocalProvider(
-        LocalContentColor provides contentColor
+        LocalContentColor provides Color(0xFFF4EEEE)
     ) {
-        ConstraintLayout(modifier = modifier) {
+        Surface(
+            modifier = modifier,
+            color = Color(0xFF140D10),
+            contentColor = Color(0xFFF4EEEE),
+            shadowElevation = 5.dp
+        ) {
+            ConstraintLayout(modifier = Modifier.fillMaxSize()) {
             val (backCenter, title, endButtons) = createRefs()
 
             val backDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
@@ -336,7 +342,10 @@ private fun <E: TitledNavKey> TopBar(
                 },
                 targetState = parentRes to childRes
             ) { (parent, child) ->
-                val style = MaterialTheme.typography.titleMedium
+                val style = MaterialTheme.typography.titleMedium.copy(
+                    color = Color(0xFFFF5361),
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                )
                 val softWarp = false
                 val maxLines = 1
 
