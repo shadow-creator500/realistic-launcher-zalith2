@@ -74,7 +74,8 @@ jobs:
       - name: Run JVM unit tests
         run: |
           chmod +x gradlew
-          ./gradlew ZalithLauncher:testDebugUnitTest
+          # These JVM tests do not load PetLib native code.
+          ./gradlew ZalithLauncher:testDebugUnitTest -x :PetLib:cargoBuild
 
   build:
     needs: unit-tests
