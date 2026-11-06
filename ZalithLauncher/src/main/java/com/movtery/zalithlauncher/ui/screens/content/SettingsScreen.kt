@@ -19,6 +19,9 @@
 package com.movtery.zalithlauncher.ui.screens.content
 
 import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Surface
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -128,48 +131,106 @@ private fun TabMenu(
     navigateTo: (TitledNavKey) -> Unit
 ) {
     val ctx = rememberAnimatedContext(isVisible = isVisible)
-
     val scrollState = rememberScrollState()
-    Column(
-        modifier = modifier
-            .fadeEdge(scrollState)
-            .width(IntrinsicSize.Min)
-            .padding(start = 8.dp)
-            .animated(ctx, from = AnimatedDirection.Left)
-            .verticalScroll(scrollState),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Spacer(modifier = Modifier.height(12.dp))
-        settingItems.forEach { item ->
-            if (item.division) {
-                HorizontalDivider(
-                    modifier = Modifier
-                        .padding(vertical = 12.dp)
-                        .fillMaxWidth(0.4f)
-                        .alpha(0.4f),
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-            }
 
-            NavigationRailItem(
-                selected = settingsScreenKey == item.key,
-                onClick = {
-                    navigateTo(item.key)
-                },
-                icon = {
-                    item.icon()
-                },
-                label = {
+    Surface(
+        modifier = modifier
+            .width(172.dp)
+            .padding(start = 8.dp, top = 10.dp, bottom = 10.dp)
+            .animated(ctx, from = AnimatedDirection.Left),
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        shape = RoundedCornerShape(22.dp),
+        tonalElevation = 2.dp
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxHeight()
+                .fadeEdge(scrollState)
+                .verticalScroll(scrollState)
+                .padding(horizontal = 10.dp, vertical = 14.dp),
+            verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(5.dp)
+        ) {
+            Surface(
+                color = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                shape = RoundedCornerShape(14.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(modifier = Modifier.padding(horizontal = 11.dp, vertical = 12.dp)) {
                     Text(
-                        modifier = Modifier.basicMarquee(iterations = Int.MAX_VALUE),
-                        text = stringResource(item.textRes),
-                        maxLines = 1,
-                        style = MaterialTheme.typography.labelMedium
+                        text = "REALISTIC",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = androidx.compose.ui.text.font.FontWeight.Black,
+                        letterSpacing = 1.1.sp
+                    )
+                    Text(
+                        text = "LAUNCHER  •  AJUSTES",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.78f)
                     )
                 }
-            )
+            }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(10.dp))
+            settingItems.forEach { item ->
+                if (item.division) {
+                    HorizontalDivider(
+                        modifier = Modifier
+                            .padding(vertical = 8.dp, horizontal = 12.dp)
+                            .fillMaxWidth(),
+                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.65f)
+                    )
+                }
+
+                val selected = settingsScreenKey == item.key
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(13.dp))
+                        .clickable { navigateTo(item.key) },
+                    color = if (selected) {
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.16f)
+                    } else {
+                        androidx.compose.ui.graphics.Color.Transparent
+                    },
+                    contentColor = if (selected) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    },
+                    shape = RoundedCornerShape(13.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 11.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        item.icon()
+                        Spacer(modifier = Modifier.width(9.dp))
+                        Text(
+                            modifier = Modifier
+                                .weight(1f)
+                                .basicMarquee(iterations = Int.MAX_VALUE),
+                            text = stringResource(item.textRes),
+                            maxLines = 1,
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = if (selected) {
+                                androidx.compose.ui.text.font.FontWeight.Bold
+                            } else {
+                                androidx.compose.ui.text.font.FontWeight.Medium
+                            }
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
+                text = "REALISTIC LAUNCHER",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.55f),
+                letterSpacing = 0.7.sp
+            )
         }
     }
 }
