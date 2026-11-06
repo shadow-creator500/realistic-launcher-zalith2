@@ -590,11 +590,10 @@ private fun VersionsLayout(
 
             Box(modifier = Modifier.fillMaxSize()) {
                 if (versions.isNotEmpty()) {
-                    if (horizontalVersionCards) {
+                    if (horizontalVersionCards.value) {
                         LazyRow(
                             modifier = Modifier
-                                .fillMaxSize()
-                                ,
+                                .fillMaxSize(),
                             contentPadding = PaddingValues(
                                 start = 12.dp,
                                 top = with(density) {
@@ -604,7 +603,6 @@ private fun VersionsLayout(
                                 bottom = 12.dp
                             ),
                             horizontalArrangement = Arrangement.spacedBy(12.dp),
-                            
                         ) {
                             items(versions, key = { it.toString() }) { version ->
                                 VersionItemLayout(
