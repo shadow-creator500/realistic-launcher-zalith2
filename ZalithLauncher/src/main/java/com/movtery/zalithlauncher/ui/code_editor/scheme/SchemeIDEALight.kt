@@ -23,23 +23,23 @@ import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
 class SchemeIDEALight: EditorColorScheme(false) {
     override fun applyDefault() {
         super.applyDefault()
-        setColor(WHOLE_BACKGROUND, 0xFFFFFFFF.toInt())
-        setColor(TEXT_NORMAL, 0xFF000000.toInt())
-        setColor(CURRENT_LINE, 0xFFF5F8FE.toInt())
-        setColor(SELECTED_TEXT_BACKGROUND, 0xFFA6D2FF.toInt())
+        setColor(WHOLE_BACKGROUND, 0xFFFFF7F8.toInt())
+        setColor(TEXT_NORMAL, 0xFF241216.toInt())
+        setColor(CURRENT_LINE, 0xFFFFE9ED.toInt())
+        setColor(SELECTED_TEXT_BACKGROUND, 0xFFFFC7D0.toInt())
         setColor(SELECTION_INSERT, 0xFF000000.toInt())
-        setColor(LINE_NUMBER_BACKGROUND, 0xFFFFFFFF.toInt())
-        setColor(LINE_NUMBER, 0xFFAEB3C2.toInt())
-        setColor(LINE_NUMBER_CURRENT, 0xFF767A8A.toInt())
-        setColor(LINE_DIVIDER, 0xFFDFE1E5.toInt())
-        setColor(BLOCK_LINE, 0xFFEBECF0.toInt())
+        setColor(LINE_NUMBER_BACKGROUND, 0xFFFFF2F4.toInt())
+        setColor(LINE_NUMBER, 0xFFB78E96.toInt())
+        setColor(LINE_NUMBER_CURRENT, 0xFF7A3440.toInt())
+        setColor(LINE_DIVIDER, 0xFFF0CDD3.toInt())
+        setColor(BLOCK_LINE, 0xFFF6DDE2.toInt())
         setColor(NON_PRINTABLE_CHAR, 0xFF767A8A.toInt())
         setColor(SCROLL_BAR_THUMB, 0xFFA6A6A6.toInt())
         setColor(SCROLL_BAR_THUMB_PRESSED, 0xFF565656.toInt())
-        setColor(COMPLETION_WND_BACKGROUND, 0xFFFFFFFF.toInt())
+        setColor(COMPLETION_WND_BACKGROUND, 0xFFFFF0F2.toInt())
 
         //语法高亮
-        setColor(KEYWORD, 0xFF000033.toInt())
+        setColor(KEYWORD, 0xFF8B1028.toInt())
         setColor(COMMENT, 0xFF8C8C8C.toInt())
         setColor(LITERAL, 0xFF006700.toInt())
         setColor(OPERATOR, 0xFF000000.toInt())
@@ -57,7 +57,7 @@ class SchemeIDEALight: EditorColorScheme(false) {
         setColor(PROBLEM_TYPO, 0xFF7EC482.toInt())
 
         //其他
-        setColor(MATCHED_TEXT_BACKGROUND, 0xFFFCD47E.toInt())
-        setColor(HIGHLIGHTED_DELIMITERS_BACKGROUND, 0xFF93D9D9.toInt())
+        setColor(MATCHED_TEXT_BACKGROUND, 0xFFFFDCE2.toInt())
+        setColor(HIGHLIGHTED_DELIMITERS_BACKGROUND, 0xFFF0CDD3.toInt())
     }
 }

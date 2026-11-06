@@ -25,28 +25,28 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 @Composable
-fun fmBackgroundColor(): Color = MaterialTheme.colorScheme.surfaceContainer
+fun fmBackgroundColor(): Color = MaterialTheme.colorScheme.background
 @Composable
-fun fmOnBackgroundColor(): Color = MaterialTheme.colorScheme.onSurfaceVariant
+fun fmOnBackgroundColor(): Color = MaterialTheme.colorScheme.onBackground
 
 @Composable
-fun fmCardColor(): Color = MaterialTheme.colorScheme.surfaceBright
+fun fmCardColor(): Color = Color(0xFF19090D)
 @Composable
-fun fmOnCardColor(): Color = MaterialTheme.colorScheme.onSurface
+fun fmOnCardColor(): Color = Color(0xFFFFF4F5)
 
 @Composable
-fun fmSecondaryTextColor(): Color = MaterialTheme.colorScheme.onSurfaceVariant
+fun fmSecondaryTextColor(): Color = Color(0xFFCDB9BD)
 
 @Composable
 fun fmErrorColor(): Color = MaterialTheme.colorScheme.error
 
 @Composable
-fun fmSelectionColor(): Color = MaterialTheme.colorScheme.primary.copy(alpha = 0.16f)
+fun fmSelectionColor(): Color = MaterialTheme.colorScheme.primary.copy(alpha = 0.22f)
 
 @Composable
 fun fmTopbarColors(): TopAppBarColors = TopAppBarDefaults.topAppBarColors(
-    containerColor = Color.Transparent,
-    scrolledContainerColor = Color.Transparent,
+    containerColor = Color(0xFF10070A),
+    scrolledContainerColor = Color(0xFF10070A),
     navigationIconContentColor = fmOnBackgroundColor(),
     titleContentColor = fmOnBackgroundColor(),
     actionIconContentColor = fmOnBackgroundColor(),
