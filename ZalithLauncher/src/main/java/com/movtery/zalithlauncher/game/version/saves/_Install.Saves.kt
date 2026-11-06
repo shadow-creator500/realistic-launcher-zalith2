@@ -82,10 +82,10 @@ suspend fun unpackSaveZip(zipFile: File, targetPath: File) = withContext(Dispatc
 }
 internal fun createUniqueSaveDirectory(targetPath: File, archiveBaseName: String): File {
     val baseName = archiveBaseName
-        .replace(Regex("""[\\/:*?"<>|\t\n]"""), "_")
+        .replace(Regex("""[\\/:*?"<>|\p{Cc}]"""), "_")
         .replace("..", "_")
         .trim()
-        .take(100)
+        .take(60)
         .ifBlank { "Imported World" }
         .let { if (it == "." || it == "..") "Imported World" else it }
 
