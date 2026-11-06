@@ -53,6 +53,7 @@ jobs:
           ./gradlew ZalithLauncher:testDebugUnitTest
 
   build:
+    needs: unit-tests
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     strategy:
