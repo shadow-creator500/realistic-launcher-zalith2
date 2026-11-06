@@ -513,32 +513,62 @@ private fun ActionMenuCardContent(
             .then(modifier),
         shape = MaterialTheme.shapes.extraLarge
     ) {
-        ConstraintLayout(
-            modifier = Modifier.fillMaxSize()
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            val (accountAvatar, versionManagerLayout) = createRefs()
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    Text(
+                        text = "REALISTIC LAUNCHER",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Text(
+                        text = "CENTRAL DE JOGO",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                Icon(
+                    painter = painterResource(R.drawable.ic_play_arrow_filled),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(22.dp)
+                )
+            }
 
-            AccountAvatarCenter(
+            androidx.compose.material3.Surface(
                 modifier = Modifier
-                    .constrainAs(accountAvatar) {
-                        top.linkTo(parent.top)
-                        bottom.linkTo(versionManagerLayout.top)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }.guideNode(
-                        key = GuideKeys.Main.Step.Account,
-                        preferSide = GuideSide.Below
-                    ),
-                account = account,
-                onClick = toAccountManageScreen
-            )
+                    .fillMaxWidth()
+                    .weight(1f),
+                shape = MaterialTheme.shapes.extraLarge,
+                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.42f)
+            ) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    AccountAvatarCenter(
+                        modifier = Modifier
+                            .guideNode(
+                                key = GuideKeys.Main.Step.Account,
+                                preferSide = GuideSide.Below
+                            ),
+                        account = account,
+                        onClick = toAccountManageScreen
+                    )
+                }
+            }
 
             VersionsContent(
-                modifier = Modifier.constrainAs(versionManagerLayout) {
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    bottom.linkTo(parent.bottom)
-                },
+                modifier = Modifier.fillMaxWidth(),
                 onLaunchGame = onLaunchGame,
                 toVersionManageScreen = toVersionManageScreen,
                 toVersionSettingsScreen = toVersionSettingsScreen,
