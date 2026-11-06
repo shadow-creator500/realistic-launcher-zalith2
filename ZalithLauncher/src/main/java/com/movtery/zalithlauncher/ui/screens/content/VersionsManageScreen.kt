@@ -38,6 +38,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
@@ -267,6 +268,7 @@ fun VersionsManageScreen(
 
     val versions by rememberVersions(VersionsManager.versions, viewModel)
     val currentVersion by VersionsManager.currentVersion.collectAsStateWithLifecycle()
+    val horizontalVersionCards = AllSettings.horizontalVersionCards.state
     val isRefreshing by VersionsManager.isRefreshing.collectAsStateWithLifecycle()
 
     GamePathOperation(
@@ -588,63 +590,114 @@ private fun VersionsLayout(
 
             Box(modifier = Modifier.fillMaxSize()) {
                 if (versions.isNotEmpty()) {
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .nestedScroll(scrollBehavior.nestedScrollConnection)
-                            .topBarWheelFallback(topAppBarState)
-                            .nonInteractiveScrollbar(
-                                state = listState.scrollIndicatorState!!,
-                                orientation = Orientation.Vertical,
-                            )
-                            .clipToBounds()
-                            .topFade {
-                                (headerHeightPx + headerTopPaddingPx + 80f) *
-                                        listScrolledFraction.value *
-                                        barShownFraction.value
-                            },
-                        contentPadding = PaddingValues(
-                            start = 12.dp,
-                            top = with(density) {
-                                (headerHeightPx + topAppBarState.heightOffset).coerceAtLeast(0f).toDp()
-                            },
-                            end = 12.dp,
-                            bottom = 12.dp
-                        ),
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                        state = listState,
-                    ) {
-                        items(versions, key = { it.toString() }) { version ->
-                            VersionItemLayout(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .animateItem()
-                                    .border(
-                                        width = 1.dp,
-                                        color = if (version == currentVersion) Color(0xFFFF1738) else Color(0xFF54202A),
-                                        shape = MaterialTheme.shapes.large
-                                    ),
-                                version = version,
-                                selected = version == currentVersion,
-                                color = if (version == currentVersion) Color(0xFF2B080D) else Color(0xFF171717),
-                                contentColor = Color(0xFFF5F5F5),
-                                submitError = submitError,
-                                onSelected = {
-                                    if (version == currentVersion) return@VersionItemLayout
-                                    if (!VersionsManager.saveVersion(version)) {
-                                        //不允许选择无效版本
-                                        versionsOperation = VersionsOperation.InvalidDelete(version)
-                                    }
+                    if (horizontalVersionCards) {
+                        LazyRow(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                ,
+                            contentPadding = PaddingValues(
+                                start = 12.dp,
+                                top = with(density) {
+                                    (headerHeightPx + topAppBarState.heightOffset).coerceAtLeast(0f).toDp()
                                 },
-                                onSettingsClick = {
-                                    navigateToVersions(version)
+                                end = 12.dp,
+                                bottom = 12.dp
+                            ),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            
+                        ) {
+                            items(versions, key = { it.toString() }) { version ->
+                                VersionItemLayout(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .animateItem()
+                                        .border(
+                                            width = 1.dp,
+                                            color = if (version == currentVersion) Color(0xFFFF1738) else Color(0xFF54202A),
+                                            shape = MaterialTheme.shapes.large
+                                        ),
+                                    version = version,
+                                    selected = version == currentVersion,
+                                    color = if (version == currentVersion) Color(0xFF2B080D) else Color(0xFF171717),
+                                    contentColor = Color(0xFFF5F5F5),
+                                    submitError = submitError,
+                                    onSelected = {
+                                        if (version == currentVersion) return@VersionItemLayout
+                                        if (!VersionsManager.saveVersion(version)) {
+                                            //不允许选择无效版本
+                                            versionsOperation = VersionsOperation.InvalidDelete(version)
+                                        }
+                                    },
+                                    onSettingsClick = {
+                                        navigateToVersions(version)
+                                    },
+                                    onRenameClick = { versionsOperation = VersionsOperation.Rename(version) },
+                                    onCopyClick = { versionsOperation = VersionsOperation.Copy(version) },
+                                    onExportClick = { navigateToExport(version) },
+                                    onDeleteClick = { versionsOperation = VersionsOperation.Delete(version) },
+                                    onPinned = onVersionPinned
+                                )
+                            }
+                        }
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .nestedScroll(scrollBehavior.nestedScrollConnection)
+                                .topBarWheelFallback(topAppBarState)
+                                .nonInteractiveScrollbar(
+                                    state = listState.scrollIndicatorState!!,
+                                    orientation = Orientation.Vertical,
+                                )
+                                .clipToBounds()
+                                .topFade {
+                                    (headerHeightPx + headerTopPaddingPx + 80f) *
+                                            listScrolledFraction.value *
+                                            barShownFraction.value
                                 },
-                                onRenameClick = { versionsOperation = VersionsOperation.Rename(version) },
-                                onCopyClick = { versionsOperation = VersionsOperation.Copy(version) },
-                                onExportClick = { navigateToExport(version) },
-                                onDeleteClick = { versionsOperation = VersionsOperation.Delete(version) },
-                                onPinned = onVersionPinned
-                            )
+                            contentPadding = PaddingValues(
+                                start = 12.dp,
+                                top = with(density) {
+                                    (headerHeightPx + topAppBarState.heightOffset).coerceAtLeast(0f).toDp()
+                                },
+                                end = 12.dp,
+                                bottom = 12.dp
+                            ),
+                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                            state = listState,
+                        ) {
+                            items(versions, key = { it.toString() }) { version ->
+                                VersionItemLayout(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .animateItem()
+                                        .border(
+                                            width = 1.dp,
+                                            color = if (version == currentVersion) Color(0xFFFF1738) else Color(0xFF54202A),
+                                            shape = MaterialTheme.shapes.large
+                                        ),
+                                    version = version,
+                                    selected = version == currentVersion,
+                                    color = if (version == currentVersion) Color(0xFF2B080D) else Color(0xFF171717),
+                                    contentColor = Color(0xFFF5F5F5),
+                                    submitError = submitError,
+                                    onSelected = {
+                                        if (version == currentVersion) return@VersionItemLayout
+                                        if (!VersionsManager.saveVersion(version)) {
+                                            //不允许选择无效版本
+                                            versionsOperation = VersionsOperation.InvalidDelete(version)
+                                        }
+                                    },
+                                    onSettingsClick = {
+                                        navigateToVersions(version)
+                                    },
+                                    onRenameClick = { versionsOperation = VersionsOperation.Rename(version) },
+                                    onCopyClick = { versionsOperation = VersionsOperation.Copy(version) },
+                                    onExportClick = { navigateToExport(version) },
+                                    onDeleteClick = { versionsOperation = VersionsOperation.Delete(version) },
+                                    onPinned = onVersionPinned
+                                )
+                            }
                         }
                     }
                 } else {
