@@ -248,8 +248,8 @@ fun DownloadGameWithAddonScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 12.dp),
-                itemContainerColor = cardColor(),
-                itemContentColor = onCardColor(),
+                itemContainerColor = Color(0xFF19090D),
+                itemContentColor = Color(0xFFFFF4F5),
                 gameVersion = key.gameVersion,
                 gameType = key.type,
                 currentAddon = viewModel.currentAddon,
