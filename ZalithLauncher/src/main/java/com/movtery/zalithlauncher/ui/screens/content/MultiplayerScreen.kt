@@ -70,6 +70,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.font.FontWeight
 import com.movtery.zalithlauncher.R
+import com.movtery.zalithlauncher.game.version.installed.VersionsManager
+import com.movtery.zalithlauncher.game.version.multiplayer.AllServers
+import com.movtery.zalithlauncher.game.version.multiplayer.ServerData
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Dispatchers
@@ -303,6 +306,33 @@ private fun LocalLanCard(
 
             FilledTonalButton(
                 modifier = Modifier.fillMaxWidth(),
+                enabled = validPort != null && VersionsManager.currentVersion.value != null,
+                onClick = {
+                    val address = localAddress ?: return@FilledTonalButton
+                    val port = validPort ?: return@FilledTonalButton
+                    scope.launch {
+                        runCatching {
+                            addLanServerToSelectedVersion("REALISTIC LAN", "$address:$port")
+                        }.onSuccess { alreadyExists ->
+                            eventViewModel.sendToast(
+                                androidText(
+                                    if (alreadyExists) "Este endereço já está salvo no perfil atual"
+                                    else "Servidor LAN adicionado ao perfil atual"
+                                )
+                            )
+                        }.onFailure {
+                            eventViewModel.sendToast(
+                                androidText("Não foi possível salvar o servidor no perfil atual")
+                            )
+                        }
+                    }
+                }
+            ) {
+                Text("ADICIONAR AO MINECRAFT")
+            }
+
+            FilledTonalButton(
+                modifier = Modifier.fillMaxWidth(),
                 enabled = !isScanning,
                 onClick = {
                     scope.launch {
@@ -348,6 +378,31 @@ private fun LocalLanCard(
                             text = "${world.address}:${world.port}",
                             style = MaterialTheme.typography.bodyMedium
                         )
+                        FilledTonalButton(
+                            onClick = {
+                                scope.launch {
+                                    runCatching {
+                                        addLanServerToSelectedVersion(
+                                            name = "REALISTIC LAN • ${world.motd.take(32)}",
+                                            address = "${world.address}:${world.port}"
+                                        )
+                                    }.onSuccess { alreadyExists ->
+                                        eventViewModel.sendToast(
+                                            androidText(
+                                                if (alreadyExists) "Este mundo já está salvo no perfil atual"
+                                                else "Mundo LAN adicionado ao perfil atual"
+                                            )
+                                        )
+                                    }.onFailure {
+                                        eventViewModel.sendToast(
+                                            androidText("Não foi possível salvar o mundo no perfil atual")
+                                        )
+                                    }
+                                }
+                            }
+                        ) {
+                            Text("ADICIONAR AO MINECRAFT")
+                        }
                         FilledTonalButton(
                             onClick = {
                                 val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
@@ -466,6 +521,43 @@ private suspend fun discoverLocalLanWorlds(context: Context): List<DiscoveredLan
         }
 
         discovered.values.toList()
+    }
+
+private suspend fun addLanServerToSelectedVersion(name: String, address: String): Boolean =
+    withContext(Dispatchers.IO) {
+        val version = VersionsManager.currentVersion.value
+            ?: error("Nenhum perfil do Minecraft está selecionado")
+        val gameDirectory = version.getGameDir()
+        if (!gameDirectory.exists() && !gameDirectory.mkdirs()) {
+            error("Não foi possível acessar a pasta do perfil")
+        }
+
+        val serverFile = java.io.File(gameDirectory, "servers.dat")
+        val servers = AllServers()
+        servers.loadServers(serverFile)
+
+        val alreadyExists = servers.serverList.any {
+            it.originIp.equals(address, ignoreCase = true)
+        }
+        if (alreadyExists) return@withContext true
+
+        servers.addServer(
+            ServerData(
+                name = name.take(64),
+                originIp = address
+            )
+        )
+        servers.save(gameDirectory)
+
+        // Confirma que o endereço foi realmente gravado antes de informar sucesso.
+        val verification = AllServers()
+        verification.loadServers(serverFile)
+        check(verification.serverList.any {
+            it.originIp.equals(address, ignoreCase = true)
+        }) {
+            "O Minecraft não confirmou a gravação do servidor"
+        }
+        false
     }
 
 private fun findLocalLanAddress(): String? {
