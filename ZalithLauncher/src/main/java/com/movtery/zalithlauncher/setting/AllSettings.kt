@@ -413,6 +413,11 @@ object AllSettings : SettingsRegistry() {
     val launcherFullScreen = boolSetting("launcherFullScreen", true)
 
     /**
+     * Exibir versões em uma faixa horizontal na tela de gerenciamento
+     */
+    val horizontalVersionCards = boolSetting("horizontalVersionCards", false)
+
+    /**
      * 持续型节日彩蛋效果
      */
     val launcherFestivalEffects = boolSetting("launcherFestivalEffects", true)
