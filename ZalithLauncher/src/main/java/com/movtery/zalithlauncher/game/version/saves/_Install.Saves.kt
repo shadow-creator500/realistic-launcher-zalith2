@@ -38,22 +38,54 @@ private const val TAG = "InstallSaves"
  * 解压存档压缩包
  */
 suspend fun unpackSaveZip(zipFile: File, targetPath: File) = withContext(Dispatchers.IO) {
-    val path = extractLevelPath(zipFile) ?: throw IOException("Unable to locate the level where the level.dat file is stored.")
+    val path = extractLevelPath(zipFile)
+        ?: throw IOException("Unable to locate the level where the level.dat file is stored.")
     Logger.info(TAG, "Found the level of the level.data file: $path")
-    val target = File(targetPath, zipFile.nameWithoutExtension)
-    try {
-        JDKZipFile(zipFile).use { zip ->
-            zip.extractFromZip(path, target)
-            Logger.info(TAG, "Decompression is complete")
-        }
-    } catch (e: Exception) {
-        if (e !is UnpackZipException) {
-            tryApacheZip(zipFile, path, target)
-        } else {
-            throw e
-        }
+
+    if (!targetPath.exists() && !targetPath.mkdirs()) {
+        throw IOException("Unable to create the worlds directory: $targetPath")
     }
-    FileUtils.deleteQuietly(zipFile)
+    if (!targetPath.isDirectory) {
+        throw IOException("The worlds path is not a directory: $targetPath")
+    }
+
+    // Never extract over an existing world. Give repeated imports a distinct folder.
+    val baseName = zipFile.nameWithoutExtension
+        .replace(Regex("[\\\\/:*?\\"<>|\\\\t\\\\n]"), "_")
+        .replace("..", "_")
+        .trim()
+        .ifBlank { "Imported World" }
+    var target = File(targetPath, baseName)
+    var suffix = 2
+    while (target.exists()) {
+        target = File(targetPath, "$baseName ($suffix)")
+        suffix++
+    }
+
+    try {
+        try {
+            JDKZipFile(zipFile).use { zip ->
+                zip.extractFromZip(path, target)
+                Logger.info(TAG, "Decompression is complete")
+            }
+        } catch (e: Exception) {
+            if (e !is UnpackZipException) {
+                tryApacheZip(zipFile, path, target)
+            } else {
+                throw e
+            }
+        }
+
+        // A successful unzip is not enough: Minecraft worlds must have level.dat at the root.
+        if (!File(target, "level.dat").isFile) {
+            throw IOException("The imported archive does not contain level.dat at the world root.")
+        }
+
+        FileUtils.deleteQuietly(zipFile)
+    } catch (e: Exception) {
+        FileUtils.deleteQuietly(target)
+        throw e
+    }
 }
 
 private suspend fun tryApacheZip(zipFile: File, path: String, target: File) {
