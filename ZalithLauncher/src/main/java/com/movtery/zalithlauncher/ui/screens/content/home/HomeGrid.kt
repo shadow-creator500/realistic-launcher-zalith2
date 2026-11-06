@@ -36,8 +36,10 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.background
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -56,6 +58,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
@@ -229,56 +234,139 @@ fun HomeGrid(
                 .padding(6.dp),
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            Surface(
+            // Painel principal: visual de launcher para PC, com identidade própria.
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 6.dp, vertical = 8.dp),
-                shape = MaterialTheme.shapes.large,
-                color = MaterialTheme.colorScheme.surfaceContainerLow,
-                contentColor = MaterialTheme.colorScheme.onSurface
+                    .padding(horizontal = 6.dp, vertical = 8.dp)
+                    .clip(RoundedCornerShape(22.dp))
+                    .background(
+                        Brush.linearGradient(
+                            colors = listOf(
+                                Color(0xFF3A171B),
+                                Color(0xFF211719),
+                                Color(0xFF151515)
+                            )
+                        )
+                    )
             ) {
-                Column(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
-                    verticalArrangement = Arrangement.spacedBy(5.dp)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 14.dp, vertical = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    Text(
-                        text = "REALISTIC LAUNCHER",
-                        color = MaterialTheme.colorScheme.primary,
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Black,
-                        letterSpacing = 1.5.sp
-                    )
-                    Text(
-                        text = "SOBREVIVÊNCIA REALISTA  •  MINECRAFT JAVA",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        style = MaterialTheme.typography.labelMedium,
-                        letterSpacing = 1.sp
-                    )
-                    Text(
-                        text = "Explore, construa e sobreviva. Sua próxima aventura começa aqui.",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                    Surface(
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Surface(
+                            color = Color(0xFFB92C36),
+                            contentColor = Color.White,
+                            shape = RoundedCornerShape(6.dp)
+                        ) {
+                            Text(
+                                text = "MINECRAFT JAVA",
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                letterSpacing = 1.sp
+                            )
+                        }
+                        Text(
+                            text = "REALISTIC\\nLAUNCHER",
+                            color = Color(0xFFFFF7F7),
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Black,
+                            lineHeight = 24.sp,
+                            letterSpacing = 0.2.sp
+                        )
+                        Text(
+                            text = "Seu mundo. Suas regras.",
+                            color = Color(0xFFD7C9CA),
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(7.dp)
+                                    .background(Color(0xFFE34A53), CircleShape)
+                            )
+                            Text(
+                                text = "PERFIS E INSTALAÇÕES",
+                                color = Color(0xFFE9BFC2),
+                                style = MaterialTheme.typography.labelSmall,
+                                letterSpacing = 0.6.sp
+                            )
+                        }
+                    }
+
+                    Box(
                         modifier = Modifier
-                            .padding(top = 5.dp)
-                            .size(width = 52.dp, height = 3.dp),
-                        color = MaterialTheme.colorScheme.primary,
-                        shape = CircleShape
-                    ) {}
+                            .size(64.dp)
+                            .clip(RoundedCornerShape(17.dp))
+                            .background(Color(0xFFB92C36)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "RL",
+                            color = Color.White,
+                            fontSize = 27.sp,
+                            fontWeight = FontWeight.Black,
+                            letterSpacing = (-1).sp
+                        )
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .padding(5.dp)
+                                .size(9.dp)
+                                .background(Color(0xFFFFD6D8), RoundedCornerShape(2.dp))
+                        )
+                    }
                 }
             }
 
-            Text(
-                text = "ESCOLHA SUA VERSÃO",
-                modifier = Modifier.padding(start = 10.dp, top = 8.dp, bottom = 2.dp),
-                color = MaterialTheme.colorScheme.primary,
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = 1.sp
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 12.dp, end = 10.dp, top = 10.dp, bottom = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "SUAS INSTALAÇÕES",
+                        color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 0.7.sp
+                    )
+                    Text(
+                        text = "Selecione um perfil para jogar",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+                Surface(
+                    color = Color(0xFF351C20),
+                    contentColor = Color(0xFFFFA6AC),
+                    shape = RoundedCornerShape(50)
+                ) {
+                    Text(
+                        text = "JAVA",
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 1.sp
+                    )
+                }
+            }
+
             val systemCards = HomeCards.systemCards()
-            if (!systemCards.isEmpty()) {
+            if (systemCards.isNotEmpty()) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -295,14 +383,6 @@ fun HomeGrid(
                 }
             }
 
-            Text(
-                text = "SEUS PERFIS DE JOGO",
-                modifier = Modifier.padding(start = 10.dp, top = 16.dp, bottom = 2.dp),
-                color = MaterialTheme.colorScheme.primary,
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = 1.sp
-            )
             CardGrid(
                 state = state,
                 containerColor = cardColor(),
