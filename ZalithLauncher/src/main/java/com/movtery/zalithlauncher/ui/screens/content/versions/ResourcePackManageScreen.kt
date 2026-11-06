@@ -665,8 +665,8 @@ private fun ResourcePackItemLayout(
     resourcePackInfo: ResourcePackInfo,
     selected: Boolean,
     onClick: () -> Unit = {},
-    itemColor: Color = itemColor(),
-    itemContentColor: Color = onItemColor(),
+    itemColor: Color = Color(0xFF19090D),
+    itemContentColor: Color = Color(0xFFFFF4F5),
     borderColor: Color = MaterialTheme.colorScheme.primary,
     shape: Shape = MaterialTheme.shapes.large,
     updateOperation: (ResourcePackOperation) -> Unit
