@@ -228,6 +228,7 @@ private fun LocalLanCard(
     eventViewModel: EventViewModel
 ) {
     var localAddress by remember { mutableStateOf(findLocalLanAddress()) }
+    var serverAddress by remember { mutableStateOf(localAddress.orEmpty()) }
     var gamePort by remember { mutableStateOf("") }
     var discoveredWorlds by remember { mutableStateOf<List<DiscoveredLanWorld>>(emptyList()) }
     var isScanning by remember { mutableStateOf(false) }
@@ -254,12 +255,21 @@ private fun LocalLanCard(
                 style = MaterialTheme.typography.bodySmall
             )
             Text(
-                text = localAddress ?: "Não foi possível identificar um IP local. Verifique o Wi-Fi ou hotspot.",
+                text = localAddress?.let { "IP DESTE CELULAR: $it" }
+                    ?: "Não foi possível identificar um IP local. Verifique o Wi-Fi ou hotspot.",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold
             )
+            OwnOutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = serverAddress,
+                onValueChange = { serverAddress = it.trim() },
+                label = { Text("IP DO ANFITRIÃO") },
+                singleLine = true,
+                shape = MaterialTheme.shapes.large
+            )
             Text(
-                text = "Digite a porta exibida pelo Minecraft no chat depois de abrir o mundo para LAN.",
+                text = "Use o IP do celular que abriu o mundo para LAN e a porta mostrada no chat do Minecraft.",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -279,9 +289,9 @@ private fun LocalLanCard(
             ) {
                 Button(
                     modifier = Modifier.weight(1f),
-                    enabled = localAddress != null && validPort != null,
+                    enabled = serverAddress.isNotBlank() && validPort != null,
                     onClick = {
-                        val address = localAddress ?: return@Button
+                        val address = serverAddress.trim().takeIf { it.isNotBlank() } ?: return@Button
                         val port = validPort ?: return@Button
                         val connectionAddress = "$address:$port"
                         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
@@ -294,7 +304,11 @@ private fun LocalLanCard(
                 FilledTonalButton(
                     modifier = Modifier.weight(1f),
                     onClick = {
+                        val previousLocalAddress = localAddress
                         localAddress = findLocalLanAddress()
+                        if (serverAddress.isBlank() || serverAddress == previousLocalAddress) {
+                            serverAddress = localAddress.orEmpty()
+                        }
                         if (localAddress == null) {
                             eventViewModel.sendToast(androidText("Nenhum IP local encontrado"))
                         }
@@ -306,9 +320,9 @@ private fun LocalLanCard(
 
             FilledTonalButton(
                 modifier = Modifier.fillMaxWidth(),
-                enabled = validPort != null && VersionsManager.currentVersion.value != null,
+                enabled = serverAddress.isNotBlank() && validPort != null && VersionsManager.currentVersion.value != null,
                 onClick = {
-                    val address = localAddress ?: return@FilledTonalButton
+                    val address = serverAddress.trim().takeIf { it.isNotBlank() } ?: return@FilledTonalButton
                     val port = validPort ?: return@FilledTonalButton
                     scope.launch {
                         runCatching {
