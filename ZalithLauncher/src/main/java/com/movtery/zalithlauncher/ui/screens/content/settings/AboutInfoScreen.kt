@@ -75,8 +75,6 @@ import com.movtery.zalithlauncher.ui.screens.NormalNavKey
 import com.movtery.zalithlauncher.ui.screens.TitledNavKey
 import com.movtery.zalithlauncher.ui.screens.content.settings.layouts.CardPosition
 import com.movtery.zalithlauncher.ui.screens.content.settings.layouts.SettingsCard
-import com.movtery.zalithlauncher.ui.theme.itemColor
-import com.movtery.zalithlauncher.ui.theme.onItemColor
 import com.movtery.petlib.R as PetLibR
 
 @Composable
@@ -313,8 +311,8 @@ private fun LinkIconItem(
     text: String,
     openLicense: (() -> Unit)? = null,
     openLink: (() -> Unit)? = null,
-    color: Color = itemColor(),
-    contentColor: Color = onItemColor(),
+    color: Color = Color(0xFF19090D),
+    contentColor: Color = Color(0xFFFFF4F5),
     useImage: Boolean = true
 ) {
     Surface(
@@ -397,8 +395,8 @@ private fun ButtonIconItem(
     title: String,
     text: String,
     button: @Composable RowScope.() -> Unit,
-    color: Color = itemColor(),
-    contentColor: Color = onItemColor(),
+    color: Color = Color(0xFF19090D),
+    contentColor: Color = Color(0xFFFFF4F5),
 ) {
     Surface(
         modifier = modifier,
@@ -446,8 +444,8 @@ private fun ButtonIconItem(
 private fun PluginInfoItem(
     apkPlugin: ApkPlugin,
     modifier: Modifier = Modifier,
-    color: Color = itemColor(),
-    contentColor: Color = onItemColor(),
+    color: Color = Color(0xFF19090D),
+    contentColor: Color = Color(0xFFFFF4F5),
 ) {
     Surface(
         modifier = modifier,
@@ -518,8 +516,8 @@ private fun PluginInfoItem(
 private fun LibraryInfoItem(
     info: LibraryInfo,
     modifier: Modifier = Modifier,
-    color: Color = itemColor(),
-    contentColor: Color = onItemColor(),
+    color: Color = Color(0xFF19090D),
+    contentColor: Color = Color(0xFFFFF4F5),
     openLicense: (Int) -> Unit,
     openLink: (url: String) -> Unit
 ) {
