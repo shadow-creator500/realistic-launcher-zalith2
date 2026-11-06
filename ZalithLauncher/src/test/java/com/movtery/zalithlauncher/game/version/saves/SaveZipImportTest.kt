@@ -18,6 +18,7 @@
 
 package com.movtery.zalithlauncher.game.version.saves
 
+import com.movtery.zalithlauncher.utils.file.JavaZipEntryAdapter
 import com.movtery.zalithlauncher.utils.file.ZipEntryBase
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -25,6 +26,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.File
 import java.nio.file.Files
+import java.util.zip.ZipEntry
 
 class SaveZipImportTest {
 
@@ -71,6 +73,14 @@ class SaveZipImportTest {
         )
 
         assertEquals("MyWorld", path)
+    }
+
+    @Test
+    fun acceptsWindowsStyleZipEntrySeparators() {
+        val entry = JavaZipEntryAdapter(ZipEntry("World\\level.dat"))
+        val path = findLevelEntryName(sequenceOf(entry))
+
+        assertEquals("World", path)
     }
 
     @Test
@@ -144,6 +154,19 @@ class SaveZipImportTest {
             assertEquals("World (2)", imported.name)
             assertTrue(imported.isDirectory)
             assertEquals("keep", File(existing, "keep.txt").readText())
+        } finally {
+            root.deleteRecursively()
+        }
+    }
+
+    @Test
+    fun truncatesVeryLongImportedWorldFolderNames() {
+        val root = Files.createTempDirectory("realistic-save-long-name").toFile()
+        try {
+            val imported = createUniqueSaveDirectory(root, "W".repeat(200))
+
+            assertEquals("W".repeat(60), imported.name)
+            assertTrue(imported.isDirectory)
         } finally {
             root.deleteRecursively()
         }
