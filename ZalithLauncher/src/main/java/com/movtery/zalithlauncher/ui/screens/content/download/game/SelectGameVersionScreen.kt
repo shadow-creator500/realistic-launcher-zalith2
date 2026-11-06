@@ -320,9 +320,13 @@ private fun SelectGameVersionContent(
 /**
  * 简易过滤器，过滤特定类型的版本
  */
+private val REALISTIC_SUPPORTED_VERSIONS = setOf("1.21.1", "1.20.1", "1.19.2")
+
 private fun List<MinecraftVersion>.filterVersions(
     versionFilter: VersionFilter
 ) = filter { version ->
+    version.version.id in REALISTIC_SUPPORTED_VERSIONS
+}.filter { version ->
     version.isType(
         release = versionFilter.release,
         snapshot = versionFilter.snapshot,
