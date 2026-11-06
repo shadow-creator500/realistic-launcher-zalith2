@@ -303,13 +303,13 @@ fun VersionsManageScreen(
                 },
                 modifier = Modifier
                     .fillMaxHeight()
-                    .weight(2.5f)
+                    .weight(2f)
             )
 
             VersionsLayout(
                 modifier = Modifier
                     .fillMaxHeight()
-                    .weight(7.5f),
+                    .weight(8f),
                 isVisible = isVisible,
                 isRefreshing = isRefreshing,
                 versions = versions,
@@ -680,33 +680,61 @@ private fun VersionsLayout(
                             )
                         }
 
-                        Surface(
+                        Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .border(1.dp, Color(0xFFB51E35), RoundedCornerShape(16.dp)),
-                            color = Color(0xFF17070A),
-                            shape = RoundedCornerShape(16.dp)
+                                .border(1.dp, Color(0xFFFF2948), RoundedCornerShape(18.dp))
+                                .background(
+                                    brush = Brush.linearGradient(
+                                        colors = listOf(
+                                            Color(0xFF050505),
+                                            Color(0xFF26060C),
+                                            Color(0xFF590B19),
+                                            Color(0xFF100508)
+                                        )
+                                    ),
+                                    shape = RoundedCornerShape(18.dp)
+                                )
+                                .padding(horizontal = 18.dp, vertical = 16.dp)
                         ) {
                             Column(
-                                modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
-                                verticalArrangement = Arrangement.spacedBy(4.dp)
+                                verticalArrangement = Arrangement.spacedBy(6.dp)
                             ) {
                                 Text(
-                                    text = "SUAS VERSÕES",
+                                    text = "REALISTIC LAUNCHER",
                                     color = Color.White,
-                                    style = MaterialTheme.typography.titleLarge,
+                                    style = MaterialTheme.typography.headlineMedium,
                                     fontWeight = FontWeight.Black,
-                                    letterSpacing = 1.sp
+                                    letterSpacing = 1.4.sp
                                 )
                                 Text(
-                                    text = "${versions.size} instalações disponíveis  •  MINECRAFT JAVA",
-                                    color = Color(0xFFBDBDBD),
-                                    style = MaterialTheme.typography.labelSmall
+                                    text = "GERENCIADOR DE VERSÕES  •  MINECRAFT JAVA",
+                                    color = Color(0xFFFF405B),
+                                    style = MaterialTheme.typography.labelMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    letterSpacing = 0.8.sp
+                                )
+                                Text(
+                                    text = "Escolha, organize e prepare suas instalações para jogar.",
+                                    color = Color(0xFFE0D5D7),
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                                Box(
+                                    modifier = Modifier
+                                        .padding(top = 5.dp)
+                                        .size(width = 72.dp, height = 3.dp)
+                                        .background(Color(0xFFFF2948), RoundedCornerShape(3.dp))
+                                )
+                                Text(
+                                    text = "${versions.size} VERSÕES INSTALADAS",
+                                    color = Color.White,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold
                                 )
                                 Text(
                                     text = currentVersion?.let { "ATUAL: ${it.getVersionName()}" }
                                         ?: "Nenhuma versão selecionada",
-                                    color = Color(0xFFFF405B),
+                                    color = Color(0xFFFF7185),
                                     style = MaterialTheme.typography.labelMedium,
                                     fontWeight = FontWeight.Bold
                                 )
