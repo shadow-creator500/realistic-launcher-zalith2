@@ -239,7 +239,9 @@ private fun TabMenu(
                 }
 
                 Surface(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { backStack.navigateOnce(item.key) },
                     color = if (selected) {
                         MaterialTheme.colorScheme.primary.copy(alpha = 0.14f)
                     } else {
@@ -255,9 +257,6 @@ private fun TabMenu(
                         MaterialTheme.colorScheme.primary
                     } else {
                         MaterialTheme.colorScheme.onSurface
-                    },
-                    onClick = {
-                        backStack.navigateOnce(item.key)
                     }
                 ) {
                     Row(
