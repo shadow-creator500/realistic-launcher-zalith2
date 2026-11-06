@@ -327,7 +327,7 @@ fun VersionsManageScreen(
                 isRefreshing = isRefreshing,
                 versions = versions,
                 currentVersion = currentVersion,
-                horizontalVersionCards = horizontalVersionCards.value,
+                horizontalVersionCards = horizontalVersionCards,
                 versionCategory = viewModel.versionCategory,
                 onCategoryChange = { viewModel.changeCategory(it) },
                 allVersionsCount = viewModel.allVersionsCount,
