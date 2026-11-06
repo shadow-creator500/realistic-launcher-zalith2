@@ -327,6 +327,7 @@ fun VersionsManageScreen(
                 isRefreshing = isRefreshing,
                 versions = versions,
                 currentVersion = currentVersion,
+                horizontalVersionCards = horizontalVersionCards.value,
                 versionCategory = viewModel.versionCategory,
                 onCategoryChange = { viewModel.changeCategory(it) },
                 allVersionsCount = viewModel.allVersionsCount,
@@ -520,6 +521,7 @@ private fun VersionsLayout(
     isRefreshing: Boolean,
     versions: List<Version>,
     currentVersion: Version?,
+    horizontalVersionCards: Boolean,
     versionCategory: VersionCategory,
     onCategoryChange: (VersionCategory) -> Unit,
     allVersionsCount: Int,
@@ -590,7 +592,7 @@ private fun VersionsLayout(
 
             Box(modifier = Modifier.fillMaxSize()) {
                 if (versions.isNotEmpty()) {
-                    if (horizontalVersionCards.value) {
+                    if (horizontalVersionCards) {
                         LazyRow(
                             modifier = Modifier
                                 .fillMaxSize(),
