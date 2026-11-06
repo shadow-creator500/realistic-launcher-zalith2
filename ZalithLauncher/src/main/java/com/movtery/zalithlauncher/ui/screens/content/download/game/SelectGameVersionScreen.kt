@@ -472,6 +472,9 @@ private fun VersionList(
                 onAccessWiki = { wikiUrl ->
                     openLink(wikiUrl)
                 },
+                color = Color(0xFF19090D),
+                contentColor = Color(0xFFFFF4F5),
+                influencedByBackground = false
             )
         }
     }
