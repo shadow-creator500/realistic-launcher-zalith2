@@ -108,6 +108,7 @@
     <string name="error_connection_failed">Falha ao conectar ao servidor</string>
     <string name="error_parse_failed">Falha ao analisar os dados</string>
     <string name="error_unauthorized">(%s) Verifique suas credenciais e tente novamente</string>
+    <string name="error_curseforge_api_key_missing">O CurseForge precisa de uma chave de API aprovada. Cadastre-a como segredo CURSEFORGE_API_KEY no GitHub Actions e gere o APK novamente.</string>
     <string name="error_notfound">(%s) O recurso solicitado não pôde ser encontrado</string>
     <string name="splash_screen_unpack_desc">O Launcher precisa instalar esses arquivos para garantir que o Minecraft funcione corretamente. Eles estão incluídos no aplicativo e devem ser extraídos primeiro. Clique no botão abaixo para iniciar a extração e a atualização.</string>
     <string name="splash_screen_installing">O Launcher está extraindo esses arquivos.\nAssim que terminar, ele entrará automaticamente na tela principal. Aguarde pacientemente</string>
