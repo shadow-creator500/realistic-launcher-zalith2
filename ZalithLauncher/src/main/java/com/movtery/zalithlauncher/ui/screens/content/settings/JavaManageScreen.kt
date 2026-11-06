@@ -366,8 +366,8 @@ private fun progressRuntimeUri(
 private fun JavaRuntimeItem(
     runtime: Runtime,
     modifier: Modifier = Modifier,
-    color: Color = itemColor(),
-    contentColor: Color = onItemColor(),
+    color: Color = Color(0xFF19090D),
+    contentColor: Color = Color(0xFFFFF4F5),
     onClick: () -> Unit = {},
     onDeleteClick: (() -> Unit)? = null
 ) {
@@ -473,8 +473,8 @@ private fun SelectJavaRuntimeDialog(
                     .heightIn(max = (maxHeight - 12.dp).coerceAtMost(rememberDialogMaxHeight()))
                     .wrapContentHeight(),
                 shape = MaterialTheme.shapes.extraLarge,
-                color = cardColor(false),
-                contentColor = onCardColor(),
+                color = Color(0xFF19090D),
+                contentColor = Color(0xFFFFF4F5),
                 shadowElevation = 6.dp
             ) {
                 Column(
