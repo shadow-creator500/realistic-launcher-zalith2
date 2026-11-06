@@ -19,27 +19,44 @@
 package com.movtery.zalithlauncher.game.version.multiplayer
 
 import com.movtery.zalithlauncher.utils.network.ServerAddress
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
+/**
+ * Deterministic address parsing tests. Live server pings belong in manual integration tests,
+ * not the default unit-test suite, because CI must not depend on public network availability.
+ */
 class TestServers {
 
     @Test
-    fun testSingleServerData() {
-        val ip = "cn.mccisland.net"
-        val address = ServerAddress.parse(ip)
+    fun parsesAddressWithDefaultPort() {
+        val address = ServerAddress.parse("play.example.net")
 
-        runBlocking {
-            launch {
-                runCatching {
-                    val resolvedAddress = address.resolve()
-                    val result = pingServer(resolvedAddress)
-                    println("ip = $ip, Ping = ${result.pingMs}, status = ${result.status}")
-                }.onFailure {
-                    it.printStackTrace()
-                }
-            }
-        }
+        assertEquals("play.example.net", address.host)
+        assertEquals(ServerAddress.DEFAULT_PORT, address.port)
+    }
+
+    @Test
+    fun parsesAddressWithExplicitPort() {
+        val address = ServerAddress.parse("play.example.net:25570")
+
+        assertEquals("play.example.net", address.host)
+        assertEquals(25570, address.port)
+    }
+
+    @Test
+    fun parsesBracketedIpv6Address() {
+        val address = ServerAddress.parse("[2001:db8::1]:25575")
+
+        assertEquals("2001:db8::1", address.host)
+        assertEquals(25575, address.port)
+    }
+
+    @Test
+    fun rejectsInvalidPortsAndEmptyAddresses() {
+        assertTrue(runCatching { ServerAddress.parse("") }.isFailure)
+        assertTrue(runCatching { ServerAddress.parse("play.example.net:abc") }.isFailure)
+        assertTrue(runCatching { ServerAddress.parse("play.example.net:65536") }.isFailure)
     }
 }
