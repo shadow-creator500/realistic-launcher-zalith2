@@ -19,6 +19,8 @@
 package com.movtery.zalithlauncher.ui.screens.content
 
 import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -34,11 +36,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationRailItem
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
@@ -180,44 +184,87 @@ private fun TabMenu(
     Column(
         modifier = modifier
             .fadeEdge(scrollState)
-            .width(IntrinsicSize.Min)
-            .padding(start = 8.dp)
+            .width(156.dp)
+            .padding(start = 8.dp, end = 6.dp, top = 10.dp, bottom = 10.dp)
             .animated(ctx, from = AnimatedDirection.Left)
             .verticalScroll(scrollState),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(12.dp))
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 12.dp),
+            color = Color(0xFF16090C),
+            shape = RoundedCornerShape(18.dp),
+            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF75202F))
+        ) {
+            Column(
+                modifier = Modifier.padding(horizontal = 10.dp, vertical = 14.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(3.dp)
+            ) {
+                Text(
+                    text = "REALISTIC",
+                    color = Color.White,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Black
+                )
+                Text(
+                    text = "DOWNLOADS",
+                    color = Color(0xFFFF405B),
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Black,
+                    letterSpacing = 1.sp
+                )
+                Text(
+                    text = "CENTRAL DE CONTEÚDO",
+                    color = Color(0xFFBDBDBD),
+                    style = MaterialTheme.typography.labelSmall
+                )
+            }
+        }
+
         downloadsList.forEach { item ->
             if (item.division) {
                 HorizontalDivider(
                     modifier = Modifier
-                        .padding(vertical = 12.dp)
-                        .fillMaxWidth(0.4f)
-                        .alpha(0.4f),
-                    color = MaterialTheme.colorScheme.onSurface
+                        .padding(vertical = 9.dp)
+                        .fillMaxWidth(0.72f)
+                        .alpha(0.55f),
+                    color = Color(0xFF75202F)
                 )
             }
 
-            NavigationRailItem(
-                selected = backScreenViewModel.downloadScreen.currentKey == item.key,
-                onClick = {
-                    backStack.navigateOnce(item.key)
-                },
-                icon = {
+            val selected = backScreenViewModel.downloadScreen.currentKey == item.key
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 3.dp)
+                    .clickable { backStack.navigateOnce(item.key) },
+                color = if (selected) Color(0xFF3A0B14) else Color(0xFF151214),
+                contentColor = if (selected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
+                shape = RoundedCornerShape(13.dp),
+                border = if (selected) androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFFF2948)) else null
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 11.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(9.dp)
+                ) {
                     item.icon()
-                },
-                label = {
                     Text(
-                        modifier = Modifier.basicMarquee(iterations = Int.MAX_VALUE),
+                        modifier = Modifier
+                            .weight(1f)
+                            .basicMarquee(iterations = Int.MAX_VALUE),
                         text = stringResource(item.textRes),
                         maxLines = 1,
-                        style = MaterialTheme.typography.labelMedium
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium
                     )
                 }
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
+            }
         }
+        Spacer(modifier = Modifier.height(8.dp))
     }
 }
 
