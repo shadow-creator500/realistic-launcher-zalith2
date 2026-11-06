@@ -275,7 +275,7 @@ fun HomeGrid(
                             )
                         }
                         Text(
-                            text = "REALISTIC\\nLAUNCHER",
+                            text = "REALISTIC\nLAUNCHER",
                             color = Color(0xFFFFF7F7),
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Black,
