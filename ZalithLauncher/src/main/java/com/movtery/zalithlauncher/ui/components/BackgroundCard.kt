@@ -38,9 +38,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.unit.dp
 import com.movtery.zalithlauncher.setting.AllSettings
 import com.movtery.zalithlauncher.ui.screens.content.elements.backgroundGlass
-import com.movtery.zalithlauncher.ui.theme.cardColor
-import com.movtery.zalithlauncher.ui.theme.cardTitleColor
-import com.movtery.zalithlauncher.ui.theme.onCardColor
 
 @Composable
 private fun flatCardElevation() = CardDefaults.cardElevation(
@@ -62,8 +59,8 @@ fun BackgroundCard(
     influencedByBackground: Boolean = true,
     shape: Shape = RoundedCornerShape(22.dp),
     colors: CardColors = CardDefaults.cardColors(
-        containerColor = cardColor(influencedByBackground),
-        contentColor = onCardColor()
+        containerColor = Color(0xFF19090D),
+        contentColor = Color(0xFFFFF4F5)
     ),
     elevation: CardElevation = flatCardElevation(),
     blur: Int = AllSettings.backgroundBlur.state,
@@ -94,9 +91,9 @@ fun BackgroundCard(
     influencedByBackground: Boolean = true,
     shape: Shape = CardDefaults.shape,
     colors: CardColors = CardDefaults.cardColors(
-        containerColor = cardColor(influencedByBackground),
-        contentColor = onCardColor(),
-        disabledContainerColor = cardColor(influencedByBackground)
+        containerColor = Color(0xFF19090D),
+        contentColor = Color(0xFFFFF4F5),
+        disabledContainerColor = Color(0xFF19090D)
     ),
     elevation: CardElevation = flatCardElevation(),
     blur: Int = AllSettings.backgroundBlur.state,
@@ -131,10 +128,10 @@ fun CardTitleLayout(
     influencedByBackground: Boolean = true,
     alpha: Float = 0.5f,
     color: Color = influencedByBackgroundColor(
-        color = cardTitleColor(alpha),
+        color = Color(0xFF310E16).copy(alpha = alpha),
         enabled = influencedByBackground
     ),
-    contentColor: Color = onCardColor(),
+    contentColor: Color = Color(0xFFFFF4F5),
     blur: Int = AllSettings.backgroundBlur.state,
     content: @Composable @UiComposable ColumnScope.() -> Unit
 ) {
