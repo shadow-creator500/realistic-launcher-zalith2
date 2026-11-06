@@ -39,6 +39,24 @@ class SaveZipImportTest {
     }
 
     @Test
+    fun acceptsMinimalWorldAtZipRoot() {
+        val path = findLevelEntryName(
+            sequenceOf(Entry("level.dat"))
+        )
+
+        assertEquals("", path)
+    }
+
+    @Test
+    fun acceptsMinimalWorldInsideSingleFolder() {
+        val path = findLevelEntryName(
+            sequenceOf(Entry("MyWorld/level.dat"))
+        )
+
+        assertEquals("MyWorld", path)
+    }
+
+    @Test
     fun findsWorldInsideSingleFolder() {
         val path = findLevelEntryName(
             sequenceOf(
