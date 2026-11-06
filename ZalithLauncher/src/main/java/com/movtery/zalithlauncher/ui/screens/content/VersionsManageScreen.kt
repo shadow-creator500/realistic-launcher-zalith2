@@ -279,7 +279,17 @@ fun VersionsManageScreen(
         currentKey = backScreenViewModel.mainScreen.currentKey
     ) { isVisible ->
         Row(
-            modifier = Modifier.fillMaxSize().background(Color(0xFF050505))
+            modifier = Modifier.fillMaxSize().background(
+                brush = Brush.linearGradient(
+                    colors = listOf(
+                        Color(0xFF020202),
+                        Color(0xFF170307),
+                        Color(0xFF050505),
+                        Color(0xFF24040B),
+                        Color(0xFF020202)
+                    )
+                )
+            )
         ) {
             LeftMenu(
                 isVisible = isVisible,
@@ -695,11 +705,18 @@ private fun VersionsLayout(
                                     ),
                                     shape = RoundedCornerShape(18.dp)
                                 )
-                                .padding(horizontal = 18.dp, vertical = 16.dp)
+                                .padding(horizontal = 22.dp, vertical = 22.dp)
                         ) {
                             Column(
-                                verticalArrangement = Arrangement.spacedBy(6.dp)
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
+                                Text(
+                                    text = "SUAS VERSÕES",
+                                    color = Color(0xFFFF405B),
+                                    style = MaterialTheme.typography.labelLarge,
+                                    fontWeight = FontWeight.Black,
+                                    letterSpacing = 2.sp
+                                )
                                 Text(
                                     text = "REALISTIC LAUNCHER",
                                     color = Color.White,
@@ -708,7 +725,7 @@ private fun VersionsLayout(
                                     letterSpacing = 1.4.sp
                                 )
                                 Text(
-                                    text = "GERENCIADOR DE VERSÕES  •  MINECRAFT JAVA",
+                                    text = "GERENCIAMENTO DE VERSÕES  •  MINECRAFT JAVA",
                                     color = Color(0xFFFF405B),
                                     style = MaterialTheme.typography.labelMedium,
                                     fontWeight = FontWeight.Bold,
