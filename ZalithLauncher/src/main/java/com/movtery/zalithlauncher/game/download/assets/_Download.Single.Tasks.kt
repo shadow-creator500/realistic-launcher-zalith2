@@ -22,6 +22,7 @@ import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.coroutine.Task
 import com.movtery.zalithlauncher.coroutine.TaskSystem
 import com.movtery.zalithlauncher.game.download.assets.platform.PlatformVersion
+import com.movtery.zalithlauncher.game.download.assets.platform.curseforge.CurseForgeApiKeyMissingException
 import com.movtery.zalithlauncher.game.download.assets.platform.mcim.mapMCIMMirrorUrls
 import com.movtery.zalithlauncher.game.version.installed.Version
 import com.movtery.zalithlauncher.path.PathManager
@@ -179,6 +180,7 @@ private fun downloadSingleFile(
 
 fun mapExceptionToMessage(e: Throwable): AndroidStringText {
     return when (e) {
+        is CurseForgeApiKeyMissingException -> androidText(R.string.error_curseforge_api_key_missing)
         is HttpRequestTimeoutException -> androidText(R.string.error_timeout)
         is UnknownHostException, is UnresolvedAddressException -> androidText(R.string.error_network_unreachable)
         is ConnectException -> androidText(R.string.error_connection_failed)
