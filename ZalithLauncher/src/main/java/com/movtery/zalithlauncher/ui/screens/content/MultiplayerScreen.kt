@@ -352,9 +352,15 @@ private fun LocalLanCard(
                     scope.launch {
                         isScanning = true
                         scanFinished = false
-                        discoveredWorlds = discoverLocalLanWorlds(context)
-                        isScanning = false
-                        scanFinished = true
+                        try {
+                            discoveredWorlds = discoverLocalLanWorlds(context)
+                        } catch (_: Exception) {
+                            discoveredWorlds = emptyList()
+                            eventViewModel.sendToast(androidText("Falha ao procurar mundos LAN"))
+                        } finally {
+                            isScanning = false
+                            scanFinished = true
+                        }
                         if (discoveredWorlds.isEmpty()) {
                             eventViewModel.sendToast(androidText("Nenhum mundo LAN encontrado nesta rede"))
                         }
