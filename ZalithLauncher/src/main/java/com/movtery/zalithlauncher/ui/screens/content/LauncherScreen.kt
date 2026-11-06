@@ -719,69 +719,103 @@ private fun VersionManagerLayout(
     openListMenu: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Row(
+    androidx.compose.material3.Surface(
         modifier = modifier
             .actionMenuDragExclusion()
-            .clip(shape = MaterialTheme.shapes.large)
             .combinedClickable(
                 role = Role.Button,
                 onClick = swapToVersionManage,
                 onLongClick = {
                     if (version != null) openListMenu()
                 }
-            ).guideNode(
+            )
+            .guideNode(
                 key = GuideKeys.Main.Step.VersionList,
                 preferSide = GuideSide.Above,
-            ).padding(PaddingValues(all = 8.dp))
+            ),
+        shape = MaterialTheme.shapes.large,
+        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+        tonalElevation = 2.dp
     ) {
-        if (isRefreshing) {
-            Box(modifier = Modifier.fillMaxWidth()) {
-                LoadingIndicator(
-                    modifier = Modifier
-                        .size(24.dp)
-                        .align(Alignment.Center)
-                )
-            }
-        } else {
-            VersionIconImage(
-                version = version,
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Box(
                 modifier = Modifier
-                    .size(28.dp)
-                    .align(Alignment.CenterVertically)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-
-            if (version == null) {
-                Text(
-                    modifier = Modifier
-                        .align(Alignment.CenterVertically)
-                        .basicMarquee(iterations = Int.MAX_VALUE),
-                    text = stringResource(R.string.versions_manage_no_versions),
-                    style = MaterialTheme.typography.labelMedium,
-                    maxLines = 1
-                )
-            } else {
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .align(Alignment.CenterVertically)
+                    .size(42.dp)
+                    .clip(MaterialTheme.shapes.medium),
+                contentAlignment = Alignment.Center
+            ) {
+                androidx.compose.material3.Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.16f),
+                    shape = MaterialTheme.shapes.medium
                 ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        if (isRefreshing) {
+                            LoadingIndicator(modifier = Modifier.size(22.dp))
+                        } else {
+                            VersionIconImage(
+                                version = version,
+                                modifier = Modifier.size(30.dp)
+                            )
+                        }
+                    }
+                }
+            }
+
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                Text(
+                    text = "VERSÃO SELECIONADA",
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                    letterSpacing = 0.8.sp
+                )
+                if (isRefreshing) {
                     Text(
-                        modifier = Modifier.basicMarquee(iterations = Int.MAX_VALUE),
-                        text = version.getVersionName(),
+                        text = stringResource(R.string.generic_refresh),
                         style = MaterialTheme.typography.labelMedium,
                         maxLines = 1
                     )
+                } else if (version == null) {
+                    Text(
+                        text = stringResource(R.string.versions_manage_no_versions),
+                        style = MaterialTheme.typography.labelMedium,
+                        maxLines = 1
+                    )
+                } else {
+                    Text(
+                        text = version.getVersionName(),
+                        style = MaterialTheme.typography.titleSmall,
+                        maxLines = 1,
+                        modifier = Modifier.basicMarquee(iterations = Int.MAX_VALUE)
+                    )
                     if (version.isValid()) {
                         Text(
-                            modifier = Modifier.basicMarquee(iterations = Int.MAX_VALUE),
                             text = version.getVersionSummary(),
                             style = MaterialTheme.typography.labelSmall,
-                            maxLines = 1
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            modifier = Modifier.basicMarquee(iterations = Int.MAX_VALUE)
                         )
                     }
                 }
             }
+
+            Icon(
+                painter = painterResource(R.drawable.ic_settings_filled),
+                contentDescription = stringResource(R.string.versions_manage_settings),
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(18.dp)
+            )
         }
     }
 }
