@@ -18,6 +18,7 @@
 
 package com.movtery.zalithlauncher.ui.screens.content.settings.layouts
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -212,7 +213,11 @@ fun SettingsCard(
     val shape = rememberSettingsCardShape(position, outerShape, innerShape)
 
     BackgroundCard(
-        modifier = modifier,
+        modifier = modifier.border(
+            width = 1.dp,
+            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f),
+            shape = shape
+        ),
         shape = shape,
         content = content
     )
@@ -231,7 +236,11 @@ fun SettingsCard(
     val shape = rememberSettingsCardShape(position, outerShape, innerShape)
 
     BackgroundCard(
-        modifier = modifier,
+        modifier = modifier.border(
+            width = 1.dp,
+            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f),
+            shape = shape
+        ),
         shape = shape,
         onClick = onClick,
         enabled = enabled,
@@ -257,7 +266,11 @@ fun SettingsCard(
     val shape = rememberSettingsCardShape(position, outerShape, innerShape)
 
     BackgroundCard(
-        modifier = modifier,
+        modifier = modifier.border(
+            width = 1.dp,
+            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f),
+            shape = shape
+        ),
         shape = shape,
         onClick = onClick,
         enabled = enabled
