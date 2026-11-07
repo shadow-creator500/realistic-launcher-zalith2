@@ -20,6 +20,8 @@ package com.movtery.zalithlauncher.ui.screens.content
 
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,12 +47,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.entryProvider
 import com.movtery.zalithlauncher.R
+import com.movtery.zalithlauncher.setting.AllSettings
 import com.movtery.zalithlauncher.game.download.assets.favorites.FavoriteProjectsRepository
 import com.movtery.zalithlauncher.game.download.assets.platform.Platform
 import com.movtery.zalithlauncher.game.download.assets.platform.PlatformClasses
@@ -73,6 +77,7 @@ import com.movtery.zalithlauncher.ui.screens.content.download.DownloadShadersScr
 import com.movtery.zalithlauncher.ui.screens.content.download.assets.search.SearchIdScreen
 import com.movtery.zalithlauncher.ui.screens.content.elements.CategoryIcon
 import com.movtery.zalithlauncher.ui.screens.content.elements.CategoryItem
+import com.movtery.zalithlauncher.ui.screens.content.elements.backgroundGlass
 import com.movtery.zalithlauncher.ui.screens.navigateOnce
 import com.movtery.zalithlauncher.ui.screens.onBack
 import com.movtery.zalithlauncher.ui.screens.rememberTransitionSpec
@@ -187,6 +192,18 @@ private fun TabMenu(
             .fadeEdge(scrollState)
             .width(156.dp)
             .padding(start = 8.dp, end = 6.dp, top = 10.dp, bottom = 10.dp)
+            .clip(RoundedCornerShape(22.dp))
+            .backgroundGlass(
+                blur = AllSettings.backgroundBlur.state,
+                color = Color(0xCC12090C),
+                enabled = true
+            )
+            .background(Color(0x8F12090C))
+            .border(
+                width = 1.dp,
+                color = Color(0x5575202F),
+                shape = RoundedCornerShape(22.dp)
+            )
             .animated(ctx, from = AnimatedDirection.Left)
             .verticalScroll(scrollState),
         horizontalAlignment = Alignment.CenterHorizontally
