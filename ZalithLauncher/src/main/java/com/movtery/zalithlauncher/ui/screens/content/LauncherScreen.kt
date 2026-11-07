@@ -550,7 +550,11 @@ private fun ActionMenuCardContent(
                     .fillMaxWidth()
                     .weight(1f),
                 shape = MaterialTheme.shapes.extraLarge,
-                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.42f)
+                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.42f),
+                border = androidx.compose.foundation.BorderStroke(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.38f)
+                )
             ) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
