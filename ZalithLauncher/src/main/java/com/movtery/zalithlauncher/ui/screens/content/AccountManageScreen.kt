@@ -18,6 +18,7 @@
 
 package com.movtery.zalithlauncher.ui.screens.content
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -321,7 +322,11 @@ private fun ActionsLayout(
                 .fillMaxWidth()
                 .padding(bottom = 8.dp),
             color = MaterialTheme.colorScheme.surfaceContainerLow,
-            shape = MaterialTheme.shapes.large
+            shape = MaterialTheme.shapes.large,
+            border = BorderStroke(
+                1.dp,
+                MaterialTheme.colorScheme.primary.copy(alpha = 0.28f)
+            )
         ) {
             Column(
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 9.dp),

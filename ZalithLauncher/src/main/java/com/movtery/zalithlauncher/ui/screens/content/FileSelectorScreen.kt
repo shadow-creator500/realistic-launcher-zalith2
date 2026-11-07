@@ -19,6 +19,7 @@
 package com.movtery.zalithlauncher.ui.screens.content
 
 import androidx.compose.animation.core.Animatable
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -348,6 +349,10 @@ private fun FileItem(
         color = color,
         contentColor = contentColor,
         shape = MaterialTheme.shapes.large,
+        border = BorderStroke(
+            1.dp,
+            MaterialTheme.colorScheme.primary.copy(alpha = 0.24f)
+        ),
         onClick = onClick
     ) {
         BaseFileItem(
