@@ -54,7 +54,6 @@ jobs:
           ./gradlew ZalithLauncher:testDebugUnitTest -x :PetLib:cargoBuild
 
   build:
-    needs: unit-tests
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     strategy:
