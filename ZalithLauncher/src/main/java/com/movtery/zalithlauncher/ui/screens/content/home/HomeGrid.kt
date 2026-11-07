@@ -37,6 +37,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -59,6 +60,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
@@ -234,22 +236,57 @@ fun HomeGrid(
                 .padding(6.dp),
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            // Painel principal: visual de launcher para PC, com identidade própria.
+            // Hero principal: vidro escuro, contorno rubi e brilho discreto.
+            val heroShape = RoundedCornerShape(22.dp)
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 6.dp, vertical = 8.dp)
-                    .clip(RoundedCornerShape(22.dp))
+                    .shadow(elevation = 10.dp, shape = heroShape)
+                    .clip(heroShape)
+                    .backgroundGlass(
+                        blur = AllSettings.backgroundBlur.state,
+                        color = Color(0xCC171316),
+                        enabled = true
+                    )
                     .background(
                         Brush.linearGradient(
                             colors = listOf(
-                                Color(0xFF3A171B),
-                                Color(0xFF211719),
-                                Color(0xFF151515)
+                                Color(0xE63A171B),
+                                Color(0xDD211719),
+                                Color(0xEA151515)
                             )
                         )
                     )
+                    .border(
+                        width = 1.dp,
+                        brush = Brush.linearGradient(
+                            colors = listOf(
+                                Color(0x99FF777F),
+                                Color(0x33FFFFFF),
+                                Color(0x665D2027)
+                            )
+                        ),
+                        shape = heroShape
+                    )
             ) {
+                // Luz ambiente decorativa; não interfere nos toques nem no conteúdo.
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(top = 8.dp, end = 8.dp)
+                        .size(84.dp)
+                        .background(
+                            Brush.radialGradient(
+                                colors = listOf(
+                                    Color(0x55E34A53),
+                                    Color(0x00E34A53)
+                                )
+                            ),
+                            CircleShape
+                        )
+                )
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -309,7 +346,19 @@ fun HomeGrid(
                         modifier = Modifier
                             .size(64.dp)
                             .clip(RoundedCornerShape(17.dp))
-                            .background(Color(0xFFB92C36)),
+                            .background(
+                                Brush.linearGradient(
+                                    colors = listOf(
+                                        Color(0xFFE34A53),
+                                        Color(0xFF8F202B)
+                                    )
+                                )
+                            )
+                            .border(
+                                width = 1.dp,
+                                color = Color(0x66FFFFFF),
+                                shape = RoundedCornerShape(17.dp)
+                            ),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
