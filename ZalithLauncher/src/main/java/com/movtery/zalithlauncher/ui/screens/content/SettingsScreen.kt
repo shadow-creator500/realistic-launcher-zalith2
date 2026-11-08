@@ -18,6 +18,7 @@
 
 package com.movtery.zalithlauncher.ui.screens.content
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -142,6 +143,7 @@ private fun TabMenu(
             .animated(ctx, from = AnimatedDirection.Left),
         color = MaterialTheme.colorScheme.surfaceContainerLow,
         shape = RoundedCornerShape(22.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.24f)),
         tonalElevation = 2.dp
     ) {
         Column(
@@ -200,7 +202,12 @@ private fun TabMenu(
                     } else {
                         MaterialTheme.colorScheme.onSurfaceVariant
                     },
-                    shape = RoundedCornerShape(13.dp)
+                    shape = RoundedCornerShape(13.dp),
+                    border = if (selected) {
+                        BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.46f))
+                    } else {
+                        null
+                    }
                 ) {
                     Row(
                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 11.dp),
