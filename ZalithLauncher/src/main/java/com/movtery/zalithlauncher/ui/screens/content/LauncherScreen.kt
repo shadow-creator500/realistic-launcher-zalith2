@@ -739,7 +739,16 @@ private fun VersionManagerLayout(
                 preferSide = GuideSide.Above,
             ),
         shape = MaterialTheme.shapes.large,
-        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+        color = MaterialTheme.colorScheme.surfaceContainerHigh.copy(
+            red = MaterialTheme.colorScheme.primary.red * 0.10f +
+                MaterialTheme.colorScheme.surfaceContainerHigh.red * 0.90f,
+            green = MaterialTheme.colorScheme.surfaceContainerHigh.green,
+            blue = MaterialTheme.colorScheme.surfaceContainerHigh.blue
+        ),
+        border = androidx.compose.foundation.BorderStroke(
+            width = 1.dp,
+            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.30f)
+        ),
         tonalElevation = 2.dp
     ) {
         Row(
