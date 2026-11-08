@@ -11,6 +11,7 @@
 local.properties
 .oauth_client_id.txt
 .store_password.txt
+ZalithLauncher/realistic_launcher_release.jks
 .key_password.txt
 .curseforge_api.txt
 LWJGL/build/

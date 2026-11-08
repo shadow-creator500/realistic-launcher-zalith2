@@ -17,6 +17,10 @@ on:
         required: true
         type: string
     secrets:
+      ANDROID_KEYSTORE_BASE64:
+        required: false
+      ANDROID_KEY_ALIAS:
+        required: false
       KEY_PASSWORD:
         required: false
       STORE_PASSWORD:
@@ -62,6 +66,8 @@ jobs:
       fail-fast: false
 
     env:
+      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+      ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
       KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
       STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
       OAUTH_CLIENT_ID: ${{ secrets.OAUTH_CLIENT_ID }}
@@ -117,6 +123,19 @@ jobs:
           echo "Using NDK at $ndk"
           test -f "$ndk/source.properties"
           echo "ANDROID_NDK_HOME=$ndk" >> "$GITHUB_ENV"
+
+      - name: Validate Release signing secrets
+        if: inputs.variant == 'Release'
+        shell: bash
+        run: |
+          if [ -z "${STORE_PASSWORD:-}" ] || [ -z "${KEY_PASSWORD:-}" ]; then
+            echo "::error::Release signing needs STORE_PASSWORD and KEY_PASSWORD in repository Actions secrets."
+            exit 1
+          fi
+          if [ -n "${ANDROID_KEYSTORE_BASE64:-}" ] && [ -z "${ANDROID_KEY_ALIAS:-}" ]; then
+            echo "::error::ANDROID_KEY_ALIAS is required when ANDROID_KEYSTORE_BASE64 is configured."
+            exit 1
+          fi
 
       - name: Build APK for ${{ matrix.arch }}
         run: |

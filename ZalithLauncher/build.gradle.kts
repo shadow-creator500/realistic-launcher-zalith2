@@ -4,6 +4,7 @@ import com.android.build.gradle.tasks.MergeSourceSetFolders
 import groovy.json.JsonOutput
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.security.MessageDigest
+import java.util.Base64
 
 plugins {
     alias(libs.plugins.android.application)
@@ -41,6 +42,23 @@ fun getKeyFromLocal(envKey: String, fileName: String? = null, default: String? =
         ""
     }
 }
+
+val customReleaseKeystoreFile: File? = System.getenv("ANDROID_KEYSTORE_BASE64")
+    ?.takeIf { it.isNotBlank() }
+    ?.let { encoded ->
+        val decoded = try {
+            Base64.getDecoder().decode(encoded.filterNot { it.isWhitespace() })
+        } catch (error: IllegalArgumentException) {
+            throw GradleException(
+                "ANDROID_KEYSTORE_BASE64 must contain valid Base64-encoded keystore data.",
+                error
+            )
+        }
+        require(decoded.isNotEmpty()) { "ANDROID_KEYSTORE_BASE64 decoded to an empty file." }
+        File(rootDir, "realistic_launcher_release.jks").apply {
+            writeBytes(decoded)
+        }
+    }
 
 fun File.sha1Hex(): String {
     val digest = MessageDigest.getInstance("SHA-1")
@@ -115,9 +133,9 @@ android {
 
     signingConfigs {
         create("releaseBuild") {
-            storeFile = file("zalith_launcher.jks")
+            storeFile = customReleaseKeystoreFile ?: file("zalith_launcher.jks")
             storePassword = getKeyFromLocal("STORE_PASSWORD", ".store_password.txt")
-            keyAlias = "movtery_zalith"
+            keyAlias = System.getenv("ANDROID_KEY_ALIAS")?.takeIf { it.isNotBlank() } ?: "movtery_zalith"
             keyPassword = getKeyFromLocal("KEY_PASSWORD", ".key_password.txt")
         }
         create("debugBuild") {
