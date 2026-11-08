@@ -599,55 +599,59 @@ private fun customDark(
     )
 }
 
-private val realisticLauncherColorScheme = darkColorScheme(
-    primary = Color(0xFFFF1736),
-    onPrimary = Color(0xFFFFFFFF),
-    primaryContainer = Color(0xFF9E001E),
-    onPrimaryContainer = Color(0xFFFFDADB),
-    secondary = Color(0xFFE8C5CB),
-    onSecondary = Color(0xFF2A0F15),
-    secondaryContainer = Color(0xFF3A1720),
-    onSecondaryContainer = Color(0xFFFFE7EB),
-    tertiary = Color(0xFFFF687D),
-    onTertiary = Color(0xFF2A0000),
-    tertiaryContainer = Color(0xFF5C1725),
-    onTertiaryContainer = Color(0xFFFFDCE2),
-    error = Color(0xFFFFB4AB),
-    onError = Color(0xFF690005),
-    errorContainer = Color(0xFF93000A),
-    onErrorContainer = Color(0xFFFFDAD6),
-    background = Color(0xFF030303),
-    onBackground = Color(0xFFFFF4F5),
-    surface = Color(0xFF0B0507),
-    onSurface = Color(0xFFFFF4F5),
-    surfaceVariant = Color(0xFF251116),
-    onSurfaceVariant = Color(0xFFD9C2C7),
-    outline = Color(0xFF8A3543),
-    outlineVariant = Color(0xFF59212D),
-    scrim = Color(0xFF000000),
-    inverseSurface = Color(0xFFF6E8EB),
-    inverseOnSurface = Color(0xFF2A1218),
-    inversePrimary = Color(0xFFB00020),
-    surfaceDim = Color(0xFF080808),
-    surfaceBright = Color(0xFF401A24),
-    surfaceContainerLowest = Color(0xFF000000),
-    surfaceContainerLow = Color(0xFF11070B),
-    surfaceContainer = Color(0xFF19090D),
-    surfaceContainerHigh = Color(0xFF230D13),
-    surfaceContainerHighest = Color(0xFF2D111A),
-)
-
 @Composable
 fun ZalithLauncherTheme(
     darkTheme: Boolean = isLauncherInDarkTheme(),
-    // Kept for call-site compatibility; REALISTIC LAUNCHER uses its own fixed palette.
-    dynamicColor: Boolean = false,
+    // Dynamic color is available on Android 12+
+    dynamicColor: Boolean = true,
     backgroundViewModel: BackgroundViewModel? = null,
     festivals: List<Festival> = emptyList(),
     content: @Composable () -> Unit
 ) {
+    val colorTheme = AllSettings.launcherColorTheme.state
+    val customColorInt = AllSettings.launcherCustomColor.state
+    val customColor = Color(customColorInt)
+    val customPaletteStyle = AllSettings.launcherCustomPaletteStyle.state
+
     val context = LocalContext.current
-    val targetColorScheme = realisticLauncherColorScheme
+
+    val targetColorScheme = remember(darkTheme, dynamicColor, colorTheme, customColor, customPaletteStyle) {
+        when {
+            dynamicColor && colorTheme == ColorThemeType.DYNAMIC && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+                if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            }
+
+            darkTheme -> when (colorTheme) {
+                ColorThemeType.EMBERMIRE -> embermireDark
+                ColorThemeType.VELVET_ROSE -> velvetRoseDark
+                ColorThemeType.MISTWAVE -> mistwaveDark
+                ColorThemeType.GLACIER -> glacierDark
+                ColorThemeType.VERDANTFIELD -> verdantFieldDark
+                ColorThemeType.URBAN_ASH -> urbanAshDark
+                ColorThemeType.VERDANT_DAWN -> verdantDawnDark
+                ColorThemeType.CUSTOM -> customDark(
+                    color = customColor,
+                    style = customPaletteStyle
+                )
+                else -> embermireDark
+            }
+
+            else -> when (colorTheme) {
+                ColorThemeType.EMBERMIRE -> embermireLight
+                ColorThemeType.VELVET_ROSE -> velvetRoseLight
+                ColorThemeType.MISTWAVE -> mistwaveLight
+                ColorThemeType.GLACIER -> glacierLight
+                ColorThemeType.VERDANTFIELD -> verdantFieldLight
+                ColorThemeType.URBAN_ASH -> urbanAshLight
+                ColorThemeType.VERDANT_DAWN -> verdantDawnLight
+                ColorThemeType.CUSTOM -> customLight(
+                    color = customColor,
+                    style = customPaletteStyle
+                )
+                else -> embermireLight
+            }
+        }
+    }
 
     var currentDarkTheme by remember { mutableStateOf(darkTheme) }
     var currentDisplayScheme by remember { mutableStateOf(targetColorScheme) }
