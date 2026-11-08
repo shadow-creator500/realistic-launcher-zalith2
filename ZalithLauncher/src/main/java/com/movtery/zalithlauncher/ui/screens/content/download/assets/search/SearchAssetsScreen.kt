@@ -326,6 +326,19 @@ fun SearchAssetsScreen(
         }
     }
 
+    val headerTitle = when (platformClasses) {
+        PlatformClasses.MOD -> "REALISTIC MODS"
+        PlatformClasses.MOD_PACK -> "REALISTIC MODPACKS"
+        PlatformClasses.RESOURCE_PACK -> "REALISTIC TEXTURES"
+        PlatformClasses.SAVES -> "REALISTIC WORLDS"
+        PlatformClasses.SHADERS -> "REALISTIC SHADERS"
+    }
+    val headerSubtitle = when (platformClasses) {
+        PlatformClasses.MOD -> "FABRIC  •  1.21.1  /  1.20.1  /  1.19.2"
+        PlatformClasses.SAVES -> "CURSEFORGE  •  WORLDS & MAPS"
+        else -> "CURSEFORGE  •  MODRINTH"
+    }
+
     BaseScreen(
         levels1 = listOf(
             Pair(NestedNavKey.Download::class.java, mainScreenKey)
@@ -340,14 +353,14 @@ fun SearchAssetsScreen(
                     .padding(start = 14.dp, end = 14.dp, top = 10.dp, bottom = 6.dp)
             ) {
                 Text(
-                    text = if (platformClasses == PlatformClasses.MOD) "REALISTIC MODS" else "REALISTIC CONTENT",
+                    text = headerTitle,
                     color = MaterialTheme.colorScheme.primary,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Black,
                     letterSpacing = 1.4.sp
                 )
                 Text(
-                    text = "FABRIC  •  1.21.1  /  1.20.1  /  1.19.2",
+                    text = headerSubtitle,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     style = MaterialTheme.typography.labelSmall,
                     letterSpacing = 0.8.sp

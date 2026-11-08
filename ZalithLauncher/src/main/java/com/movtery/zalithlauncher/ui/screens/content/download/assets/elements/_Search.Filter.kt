@@ -24,6 +24,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
@@ -386,7 +387,11 @@ fun BaseFilterLayout(
 
     if (onClick != null) {
         Surface(
-            modifier = modifier,
+            modifier = modifier.border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.16f),
+                shape = shape
+            ),
             shape = shape,
             color = color,
             contentColor = contentColor,
@@ -394,7 +399,11 @@ fun BaseFilterLayout(
         ) { Content() }
     } else {
         Surface(
-            modifier = modifier,
+            modifier = modifier.border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.16f),
+                shape = shape
+            ),
             shape = shape,
             color = color,
             contentColor = contentColor,
