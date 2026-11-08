@@ -215,7 +215,7 @@ fun SettingsCard(
     BackgroundCard(
         modifier = modifier.border(
             width = 1.dp,
-            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f),
+            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.26f),
             shape = shape
         ),
         shape = shape,
@@ -238,7 +238,7 @@ fun SettingsCard(
     BackgroundCard(
         modifier = modifier.border(
             width = 1.dp,
-            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f),
+            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.26f),
             shape = shape
         ),
         shape = shape,
@@ -268,7 +268,7 @@ fun SettingsCard(
     BackgroundCard(
         modifier = modifier.border(
             width = 1.dp,
-            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f),
+            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.26f),
             shape = shape
         ),
         shape = shape,
