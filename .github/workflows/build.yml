@@ -79,6 +79,19 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Validate Release signing secrets
+        if: inputs.variant == 'Release'
+        shell: bash
+        run: |
+          if [ -z "${STORE_PASSWORD:-}" ] || [ -z "${KEY_PASSWORD:-}" ]; then
+            echo "::error::Release signing needs STORE_PASSWORD and KEY_PASSWORD in repository Actions secrets."
+            exit 1
+          fi
+          if [ -n "${ANDROID_KEYSTORE_BASE64:-}" ] && [ -z "${ANDROID_KEY_ALIAS:-}" ]; then
+            echo "::error::ANDROID_KEY_ALIAS is required when ANDROID_KEYSTORE_BASE64 is configured."
+            exit 1
+          fi
+
       - name: Set up JDK 21
         uses: actions/setup-java@v5
         with:
@@ -121,6 +134,17 @@ jobs:
           required_ndk="25.2.9519653"
           ndk="$ANDROID_HOME/ndk/$required_ndk"
 
+          # sdkmanager is part of the Android SDK command-line tools, but
+          # GitHub-hosted runners do not always add it to PATH.
+          sdkmanager_path="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          if [ ! -x "$sdkmanager_path" ]; then
+            sdkmanager_path="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager -perm -u+x 2>/dev/null | sort -V | tail -n 1 || true)"
+          fi
+          if [ -z "$sdkmanager_path" ] || [ ! -x "$sdkmanager_path" ]; then
+            echo "::error::Android SDK command-line tools (sdkmanager) were not found under $ANDROID_HOME/cmdline-tools."
+            exit 1
+          fi
+
           ndk_is_valid() {
             [ -f "$ndk/source.properties" ] &&
               grep -Fq "Pkg.Revision = $required_ndk" "$ndk/source.properties" &&
@@ -132,7 +156,7 @@ jobs:
             installed=false
             for attempt in 1 2 3; do
               echo "Installing Android NDK $required_ndk (attempt $attempt/3)"
-              if sdkmanager --install "ndk;$required_ndk" && ndk_is_valid; then
+              if "$sdkmanager_path" --install "ndk;$required_ndk" && ndk_is_valid; then
                 installed=true
                 break
               fi
@@ -149,19 +173,6 @@ jobs:
 
           echo "Using Android NDK at $ndk"
           echo "ANDROID_NDK_HOME=$ndk" >> "$GITHUB_ENV"
-
-      - name: Validate Release signing secrets
-        if: inputs.variant == 'Release'
-        shell: bash
-        run: |
-          if [ -z "${STORE_PASSWORD:-}" ] || [ -z "${KEY_PASSWORD:-}" ]; then
-            echo "::error::Release signing needs STORE_PASSWORD and KEY_PASSWORD in repository Actions secrets."
-            exit 1
-          fi
-          if [ -n "${ANDROID_KEYSTORE_BASE64:-}" ] && [ -z "${ANDROID_KEY_ALIAS:-}" ]; then
-            echo "::error::ANDROID_KEY_ALIAS is required when ANDROID_KEYSTORE_BASE64 is configured."
-            exit 1
-          fi
 
       - name: Build APK for ${{ matrix.arch }}
         run: |
