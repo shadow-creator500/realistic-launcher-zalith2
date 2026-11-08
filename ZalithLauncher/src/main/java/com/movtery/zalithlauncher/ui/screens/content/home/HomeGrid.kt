@@ -324,6 +324,13 @@ fun HomeGrid(
                             color = Color(0xFFD7C9CA),
                             style = MaterialTheme.typography.bodySmall
                         )
+                        Text(
+                            text = stringResource(R.string.welcome_screen_unofficial_notice),
+                            color = Color(0xFFE9BFC2),
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.SemiBold,
+                            letterSpacing = 0.6.sp
+                        )
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(6.dp)

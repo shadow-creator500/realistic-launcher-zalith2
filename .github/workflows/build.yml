@@ -114,14 +114,40 @@ jobs:
           cargo ndk --version
 
       - name: Setup Android NDK
+        shell: bash
         run: |
-          ndk=$(ls -d "$ANDROID_HOME"/ndk/* 2>/dev/null | sort -V | tail -1)
-          if [ -z "$ndk" ] || [ ! -f "$ndk/source.properties" ]; then
-            sdkmanager --install "ndk;27.0.12077973"
-            ndk=$(ls -d "$ANDROID_HOME"/ndk/* | sort -V | tail -1)
+          set -euo pipefail
+          # Keep this in sync with ZalithLauncher/build.gradle.kts.
+          required_ndk="25.2.9519653"
+          ndk="$ANDROID_HOME/ndk/$required_ndk"
+
+          ndk_is_valid() {
+            [ -f "$ndk/source.properties" ] &&
+              grep -Fq "Pkg.Revision = $required_ndk" "$ndk/source.properties" &&
+              [ -d "$ndk/toolchains/llvm/prebuilt" ]
+          }
+
+          if ! ndk_is_valid; then
+            rm -rf "$ndk"
+            installed=false
+            for attempt in 1 2 3; do
+              echo "Installing Android NDK $required_ndk (attempt $attempt/3)"
+              if sdkmanager --install "ndk;$required_ndk" && ndk_is_valid; then
+                installed=true
+                break
+              fi
+              rm -rf "$ndk"
+              if [ "$attempt" -lt 3 ]; then
+                sleep $((attempt * 10))
+              fi
+            done
+            if [ "$installed" != "true" ]; then
+              echo "::error::Android NDK $required_ndk could not be installed or failed validation."
+              exit 1
+            fi
           fi
-          echo "Using NDK at $ndk"
-          test -f "$ndk/source.properties"
+
+          echo "Using Android NDK at $ndk"
           echo "ANDROID_NDK_HOME=$ndk" >> "$GITHUB_ENV"
 
       - name: Validate Release signing secrets
